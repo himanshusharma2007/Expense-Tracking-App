@@ -52,7 +52,7 @@ const Layout = ({ children, title }) => {
                 {groups.map((group, index) => (
                   <Link
                     key={index}
-                    to={`/group/${group.name}`}
+                    to={`/group/${encodeURIComponent(group.name)}`}
                     className="block py-2 px-4 text-sm text-gray-400 hover:bg-gray-700 rounded"
                   >
                     {group.name}
