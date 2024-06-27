@@ -39,7 +39,7 @@ const Layout = ({ children, title }) => {
             </Link>
           ))}
           {/* Groups Dropdown */}
-          <div className="relative">
+           <div className="relative">
             <button
               onClick={() => setIsGroupsOpen(!isGroupsOpen)}
               className="w-full flex justify-between items-center py-2 px-4 my-2 rounded transition-colors duration-200 text-gray-400 hover:bg-gray-700"

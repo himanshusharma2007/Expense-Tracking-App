@@ -3,22 +3,24 @@ import React, { createContext, useState, useContext } from "react";
 const ExpenseContext = createContext();
 
 export const ExpenseProvider = ({ children }) => {
-      const newExpense = {
-        id:1233, // Generate a unique ID
-        title: "ewe e",
-        desc: "jhvkasdfisydf",
-        value: 123,
-        date: null,
-        type: "personal",
-        group:  null,
-      };
-      const group={
-        name:"xyz",
-        members:[],
-      }
+  const newExpense = {
+    id: 1233, // Generate a unique ID
+    title: "ewe e",
+    desc: "jhvkasdfisydf",
+    value: 123,
+    date: null,
+    type: "personal",
+    group: null,
+  };
+
+  const group = {
+    name: "xyz",
+    members: [],
+  };
+
   const [personalExpenses, setPersonalExpenses] = useState([newExpense]);
   const [groupExpenses, setGroupExpenses] = useState([]);
-  const [groups, setGroup] = useState([group]);
+  const [groups, setGroups] = useState([group]);
 
   const addPersonalExpense = (expense) => {
     setPersonalExpenses([...personalExpenses, expense]);
@@ -54,19 +56,30 @@ export const ExpenseProvider = ({ children }) => {
     setGroupExpenses(groupExpenses.filter((expense) => expense.id !== id));
   };
 
+  const addMemberToGroup = (groupName, member) => {
+    setGroups(
+      groups.map((group) =>
+        group.name === groupName
+          ? { ...group, members: [...group.members, member] }
+          : group
+      )
+    );
+  };
+
   return (
     <ExpenseContext.Provider
       value={{
         personalExpenses,
         groupExpenses,
         groups,
-        setGroup,
+        setGroups,
         addPersonalExpense,
         addGroupExpense,
         updatePersonalExpense,
         updateGroupExpense,
         deletePersonalExpense,
         deleteGroupExpense,
+        addMemberToGroup, // Export the function
       }}
     >
       {children}
