@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useExpenses } from "./ExpenseContext";
-import EditExpenseModal from "./EditExpenseModal";
+import EditExpenseModal from "../Modals/EditExpenseModal";
 
 const GroupExpensesTable = () => {
   const { groupExpenses, deleteGroupExpense } = useExpenses();

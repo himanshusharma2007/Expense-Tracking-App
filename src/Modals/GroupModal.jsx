@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useExpenses } from "./ExpenseContext";
+import { useExpenses } from "../components/ExpenseContext";
 
 const NewGroupModal = ({ onClose }) => {
   const [groupName, setGroupName] = useState("");

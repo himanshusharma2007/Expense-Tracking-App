@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
@@ -12,14 +12,21 @@ import { ExpenseProvider } from "./components/ExpenseContext";
 import Group from "./pages/Group";
 
 const App = () => {
+  const [username, setUsername] = useState(["", ""]);
   return (
     <ExpenseProvider>
       <Router>
         <div>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="userinfo" element={<UserInfoPage />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route
+              path="userinfo"
+              element={<UserInfoPage setUsername={setUsername} />}
+            />
+            <Route
+              path="dashboard"
+              element={<Dashboard username={username} />}
+            />
             <Route path="all-expenses" element={<AllExpenses />} />
             <Route path="personal-expenses" element={<PersonalExpenses />} />
             <Route path="group-expenses" element={<GroupExpenses />} />

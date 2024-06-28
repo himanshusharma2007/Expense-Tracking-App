@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
-import AddExpenseModal from "./AddExpenseModal";
-import NewGroupModal from "./GroupModal";
+import ExpenseTypeModal from "../Modals/ExpenseTypeModal"; 
+import AddExpenseModal from "../Modals/AddExpenseModal";
+import NewGroupModal from "../Modals/GroupModal";
 import { useExpenses } from "./ExpenseContext";
 
 const sidebarItems = [
@@ -13,12 +14,31 @@ const sidebarItems = [
   { name: "Group Expenses", path: "/group-expenses" },
 ];
 
-const Layout = ({ children, title }) => {
+const Layout = ({ children, title, firstname }) => {
   const location = useLocation();
-  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [showExpenseTypeModal, setShowExpenseTypeModal] = useState(false);
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [initialExpenseType, setInitialExpenseType] = useState("");
+  const [initialGroup, setInitialGroup] = useState("");
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [isGroupsOpen, setIsGroupsOpen] = useState(false);
   const { groups } = useExpenses();
+
+  const handleAddExpense = () => {
+    setShowExpenseTypeModal(true);
+  };
+
+  const handleExpenseTypeContinue = (expenseType, selectedGroup) => {
+    setShowExpenseTypeModal(false);
+    setInitialExpenseType(expenseType);
+    setInitialGroup(selectedGroup);
+    setShowAddExpenseModal(true);
+  };
+
+  const handleCloseModals = () => {
+    setShowExpenseTypeModal(false);
+    setShowAddExpenseModal(false);
+  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -39,7 +59,7 @@ const Layout = ({ children, title }) => {
             </Link>
           ))}
           {/* Groups Dropdown */}
-           <div className="relative">
+          <div className="relative">
             <button
               onClick={() => setIsGroupsOpen(!isGroupsOpen)}
               className="w-full flex justify-between items-center py-2 px-4 my-2 rounded transition-colors duration-200 text-gray-400 hover:bg-gray-700"
@@ -71,25 +91,42 @@ const Layout = ({ children, title }) => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-x-hidden overflow-y-auto">
+      <main className="flex-1 relative overflow-x-hidden overflow-y-auto ">
         <div className="container mx-auto px-6 py-8">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-3xl font-semibold text-gray-800">{title}</h1>
             <button
-              onClick={() => setIsExpenseModalOpen(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+              onClick={handleAddExpense}
+              className={`${
+                firstname && `absolute top-24 z-10 right-10`
+              } bg-blue-500 hover:bg-blue-600  text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105`}
             >
               Add New Expense
             </button>
+            {firstname && (
+              <div className="username capitalize font-semibold text-3xl">
+                welcome {firstname}
+              </div>
+            )}
           </div>
           {children}
         </div>
       </main>
 
-      <AddExpenseModal
-        isOpen={isExpenseModalOpen}
-        onClose={() => setIsExpenseModalOpen(false)}
-      />
+      {showExpenseTypeModal && (
+        <ExpenseTypeModal
+          onContinue={handleExpenseTypeContinue}
+          onClose={handleCloseModals}
+        />
+      )}
+      {showAddExpenseModal && (
+        <AddExpenseModal
+          isOpen={showAddExpenseModal}
+          onClose={handleCloseModals}
+          initialExpenseType={initialExpenseType}
+          initialGroup={initialGroup}
+        />
+      )}
       {isGroupModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-start">
           <NewGroupModal isOpen onClose={() => setIsGroupModalOpen(false)} />

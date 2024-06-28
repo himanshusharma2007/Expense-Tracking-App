@@ -1,12 +1,36 @@
-import React, { useState } from "react";
-import {Link} from "react-router-dom";
-const UserInfoPage = () => {
+// UserInfoPage.jsx
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { createOrGetUser, getUserData } from "../utils/firebaseUtils";
+
+const UserInfoPage = ({ setUsername }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const navigate = useNavigate();
 
-  const handleContinue = () => {
-    // Handle the continue action here
-    console.log("Continuing with:", { firstName, lastName });
+  useEffect(() => {
+    const checkExistingUser = async () => {
+      const userId = localStorage.getItem("trackexUserId");
+      if (userId) {
+        const userData = await getUserData(userId);
+        if (userData) {
+          setUsername([userData.firstName, userData.lastName]);
+          navigate("/dashboard");
+        }
+      }
+    };
+
+    checkExistingUser();
+  }, [navigate, setUsername]);
+
+  const handleContinue = async () => {
+    if (firstName && lastName) {
+      await createOrGetUser(firstName, lastName);
+      setUsername([firstName, lastName]);
+      navigate("/dashboard");
+    } else {
+      alert("Please enter both first name and last name.");
+    }
   };
 
   return (
@@ -53,14 +77,12 @@ const UserInfoPage = () => {
         <p className="text-[#3498DB] text-sm italic mb-6">
           You will be the Financial Manager of your TrackEx account.
         </p>
-        <Link to="/dashboard">
-          <button
-            className="w-full bg-[#27AE60] hover:bg-[#2ECC71] text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105"
-            onClick={handleContinue}
-          >
-            Continue
-          </button>
-        </Link>
+        <button
+          className="w-full bg-[#27AE60] hover:bg-[#2ECC71] text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105"
+          onClick={handleContinue}
+        >
+          Continue
+        </button>
       </div>
     </div>
   );
