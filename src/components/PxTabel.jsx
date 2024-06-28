@@ -4,6 +4,12 @@ import EditExpenseModal from "../Modals/EditExpenseModal";
 import { FaEdit } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
 
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return isNaN(date.getTime()) ? "" : date.toLocaleDateString();
+};
+
 const PersonalExpensesTable = () => {
   const { personalExpenses, deletePersonalExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
@@ -32,23 +38,15 @@ const PersonalExpensesTable = () => {
         <tbody>
           {personalExpenses.map((expense) => (
             <tr key={expense.id} className="text-center">
-              <td className="py-2 px-4 border-b">
-                {expense.date?.toLocaleDateString()}
-              </td>
+              <td className="py-2 px-4 border-b">{formatDate(expense.date)}</td>
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">{expense.desc}</td>
               <td className="py-2 px-4 border-b">{expense.value}</td>
               <td className="py-2 px-4 border-b flex items-center justify-center space-x-3">
-                <button
-                  onClick={() => setEditingExpense(expense)}
-                 
-                >
+                <button onClick={() => setEditingExpense(expense)}>
                   <FaEdit fontSize="25px" />
                 </button>
-                <button
-                  onClick={() => deletePersonalExpense(expense.id)}
-                  
-                >
+                <button onClick={() => deletePersonalExpense(expense.id)}>
                   <FaTrashCan className="text-red-500" fontSize="25px" />
                 </button>
               </td>

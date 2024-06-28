@@ -2,22 +2,40 @@ import React, { useState } from "react";
 import { useExpenses } from "../components/ExpenseContext";
 
 const NewGroupModal = ({ onClose }) => {
+  const { setGroups, groups, username } = useExpenses();
   const [groupName, setGroupName] = useState("");
-  const [memberNames, setMemberNames] = useState(["", ""]);
-  const { setGroups, groups } = useExpenses();
+  const [memberNames, setMemberNames] = useState([""]); // Start with one empty field for additional members
 
   const handleAddGroup = () => {
     if (groupName.trim() !== "") {
-      const members = memberNames.filter((name) => name.trim() !== "");
-      setGroups([...groups, { name: groupName, members }]);
+      if (groups.some((group) => group.name === groupName.trim())) {
+        alert(
+          "A group with this name already exists. Please choose a different name."
+        );
+        return;
+      }
+      const members = [
+        username[0],
+        ...memberNames.filter((name) => name.trim() !== ""),
+      ];
+      if (members.length < 2) {
+        alert("Please add at least 1 other member to the group.");
+        return;
+      }
+      setGroups([...groups, { name: groupName.trim(), members }]);
       setGroupName("");
-      setMemberNames(["", ""]);
+      setMemberNames([""]);
       onClose();
     }
   };
 
   const handleAddMemberField = () => {
-    setMemberNames([...memberNames, ""]);
+    if (memberNames.length < 9) {
+      // Max 10 members including the user
+      setMemberNames([...memberNames, ""]);
+    } else {
+      alert("Maximum number of members reached.");
+    }
   };
 
   const handleRemoveMemberField = (index) => {
@@ -27,6 +45,13 @@ const NewGroupModal = ({ onClose }) => {
 
   const handleMemberNameChange = (index, value) => {
     const newMemberNames = memberNames.slice();
+    if (
+      [username[0], ...newMemberNames].includes(value.trim()) &&
+      value.trim() !== ""
+    ) {
+      alert("This member name already exists in the group.");
+      return;
+    }
     newMemberNames[index] = value;
     setMemberNames(newMemberNames);
   };
@@ -72,12 +97,17 @@ const NewGroupModal = ({ onClose }) => {
               placeholder="Enter group name"
             />
             <div className="mt-4">
-              <label
-                htmlFor="memberNames"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Member Names
+              <label className="block text-sm font-medium text-gray-700">
+                Group Members
               </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  value={username[0]}
+                  readOnly
+                  className="w-full rounded-md border-gray-300 shadow-sm bg-gray-100 py-2 px-3"
+                />
+              </div>
               {memberNames.map((name, index) => (
                 <div key={index} className="flex items-center mt-2">
                   <input
@@ -89,23 +119,21 @@ const NewGroupModal = ({ onClose }) => {
                     className="flex-grow rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-2 px-3"
                     placeholder="Enter member name"
                   />
-                  {memberNames.length > 2 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveMemberField(index)}
-                      className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
-                    >
-                      &times;
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMemberField(index)}
+                    className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
+                  >
+                    &times;
+                  </button>
                 </div>
               ))}
               <button
                 type="button"
                 onClick={handleAddMemberField}
-                className="mt-2 ml-2 inline-flex  rounded-md   bg-white text-base font-medium w-fit h-fit text-blue-500 hover:text-blue-600 sm:text-sm"
+                className="mt-2 ml-2 inline-flex rounded-md bg-white text-base font-medium w-fit h-fit text-blue-500 hover:text-blue-600 sm:text-sm"
               >
-               + Add Member
+                + Add Member
               </button>
             </div>
             <button

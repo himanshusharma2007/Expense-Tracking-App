@@ -104,7 +104,7 @@ const Layout = ({ children, title, firstname }) => {
               Add New Expense
             </button>
             {firstname && (
-              <div className="username capitalize font-semibold text-3xl">
+              <div className="username capitalize font-bold text-3xl">
                 welcome {firstname}
               </div>
             )}

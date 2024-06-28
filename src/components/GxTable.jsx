@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { useExpenses } from "./ExpenseContext";
 import EditExpenseModal from "../Modals/EditExpenseModal";
+import { FaTrashCan } from "react-icons/fa6";
+import { FaEdit } from "react-icons/fa";
 
 const GroupExpensesTable = () => {
   const { groupExpenses, deleteGroupExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? "" : date.toLocaleDateString();
+  };
 
   if (groupExpenses.length === 0) {
     return (
@@ -31,25 +39,18 @@ const GroupExpensesTable = () => {
         <tbody>
           {groupExpenses.map((expense) => (
             <tr key={expense.id} className="text-center">
-              <td className="py-2 px-4 border-b">
-                {expense.date.toLocaleDateString()}
-              </td>
+              <td className="py-2 px-4 border-b">{formatDate(expense.date)}</td>
+
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">{expense.desc}</td>
               <td className="py-2 px-4 border-b">{expense.value}</td>
               <td className="py-2 px-4 border-b">{expense.group}</td>
-              <td className="py-2 px-4 border-b">
-                <button
-                  onClick={() => setEditingExpense(expense)}
-                  className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                >
-                  Edit
+              <td className="py-2 px-4 border-b flex items-center justify-center space-x-3">
+                <button onClick={() => setEditingExpense(expense)}>
+                  <FaEdit fontSize="25px" />
                 </button>
-                <button
-                  onClick={() => deleteGroupExpense(expense.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Delete
+                <button onClick={() => deletePersonalExpense(expense.id)}>
+                  <FaTrashCan className="text-red-500" fontSize="25px" />
                 </button>
               </td>
             </tr>

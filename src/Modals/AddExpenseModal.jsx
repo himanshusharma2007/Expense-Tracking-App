@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useExpenses } from "../components/ExpenseContext"; 
+import { useExpenses } from "../components/ExpenseContext";
 import { v4 as uuidv4 } from "uuid";
 
 const AddExpenseModal = ({
@@ -15,10 +15,12 @@ const AddExpenseModal = ({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
+  const [expenseCategory, setExpenseCategory] = useState("regular");
   const [payer, setPayer] = useState("");
   const [date, setDate] = useState(new Date());
   const [splitMethod, setSplitMethod] = useState("equal");
   const [customSplits, setCustomSplits] = useState({});
+  const [splitAmong, setSplitAmong] = useState([]);
 
   const { addPersonalExpense, addGroupExpense, groups } = useExpenses();
 
@@ -36,6 +38,8 @@ const AddExpenseModal = ({
       group: expenseType === "group" ? selectedGroup : null,
       payer: payer,
       splitMethod: splitMethod,
+      expenseCategory: expenseType === "personal" ? expenseCategory : null,
+      splitAmong: expenseType === "group" ? splitAmong : null,
       splitAmounts: splitMethod === "custom" ? customSplits : {},
     };
 
@@ -103,6 +107,22 @@ const AddExpenseModal = ({
                 className="w-full p-2 border rounded"
               />
             </div>
+            {expenseType === "personal" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expense Type
+                </label>
+                <select
+                  value={expenseCategory}
+                  onChange={(e) => setExpenseCategory(e.target.value)}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="regular">Regular Expense</option>
+                  <option value="borrowed">Money Borrowed</option>
+                  <option value="lent">Money Lent</option>
+                </select>
+              </div>
+            )}
             {expenseType === "group" && (
               <>
                 <div>
@@ -141,33 +161,62 @@ const AddExpenseModal = ({
             )}
           </div>
 
+          {expenseType === "group" && (
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Split Among
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {groups
+                  .find((g) => g.name === selectedGroup)
+                  ?.members.map((member) => (
+                    <label key={member} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={splitAmong.includes(member)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSplitAmong([...splitAmong, member]);
+                          } else {
+                            setSplitAmong(
+                              splitAmong.filter((m) => m !== member)
+                            );
+                          }
+                        }}
+                        className="mr-2"
+                      />
+                      {member}
+                    </label>
+                  ))}
+              </div>
+            </div>
+          )}
+
           {expenseType === "group" && splitMethod === "custom" && (
             <div className="mt-6">
               <h3 className="text-lg font-medium text-gray-700 mb-2">
                 Custom Split
               </h3>
               <div className="grid grid-cols-3 gap-4">
-                {groups
-                  .find((g) => g.name === selectedGroup)
-                  ?.members.map((member) => (
-                    <div key={member}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {member}
-                      </label>
-                      <input
-                        type="number"
-                        value={customSplits[member] || ""}
-                        onChange={(e) =>
-                          setCustomSplits({
-                            ...customSplits,
-                            [member]: e.target.value,
-                          })
-                        }
-                        className="w-full p-2 border rounded"
-                        placeholder="Amount"
-                      />
-                    </div>
-                  ))}
+                {splitAmong.map((member) => (
+                  <div key={member}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {member}
+                    </label>
+                    <input
+                      type="number"
+                      value={customSplits[member] || ""}
+                      onChange={(e) =>
+                        setCustomSplits({
+                          ...customSplits,
+                          [member]: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded"
+                      placeholder="Amount"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           )}

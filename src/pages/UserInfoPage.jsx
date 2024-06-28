@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createOrGetUser, getUserData } from "../utils/firebaseUtils";
 
-const UserInfoPage = ({ setUsername }) => {
+const UserInfoPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const navigate = useNavigate();
@@ -14,19 +14,19 @@ const UserInfoPage = ({ setUsername }) => {
       if (userId) {
         const userData = await getUserData(userId);
         if (userData) {
-          setUsername([userData.firstName, userData.lastName]);
+         
           navigate("/dashboard");
         }
       }
     };
 
     checkExistingUser();
-  }, [navigate, setUsername]);
+  }, [navigate]);
 
   const handleContinue = async () => {
     if (firstName && lastName) {
       await createOrGetUser(firstName, lastName);
-      setUsername([firstName, lastName]);
+    
       navigate("/dashboard");
     } else {
       alert("Please enter both first name and last name.");

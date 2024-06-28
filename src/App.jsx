@@ -12,7 +12,7 @@ import { ExpenseProvider } from "./components/ExpenseContext";
 import Group from "./pages/Group";
 
 const App = () => {
-  const [username, setUsername] = useState(["", ""]);
+
   return (
     <ExpenseProvider>
       <Router>
@@ -21,11 +21,11 @@ const App = () => {
             <Route path="/" element={<LandingPage />} />
             <Route
               path="userinfo"
-              element={<UserInfoPage setUsername={setUsername} />}
+              element={<UserInfoPage  />}
             />
             <Route
               path="dashboard"
-              element={<Dashboard username={username} />}
+              element={<Dashboard  />}
             />
             <Route path="all-expenses" element={<AllExpenses />} />
             <Route path="personal-expenses" element={<PersonalExpenses />} />

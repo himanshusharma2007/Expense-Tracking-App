@@ -17,7 +17,7 @@ const GroupExpenses = () => {
   }
 
   return (
-    <Layout title="Personal Expenses">
+    <Layout title="Group Expenses">
       <GroupExpensesTable />
     </Layout>
   );
