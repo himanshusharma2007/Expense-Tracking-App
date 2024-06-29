@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
-import { BiX, BiPlus } from "react-icons/bi";
+import { BiX, BiPlus, BiPencil, BiTrash } from "react-icons/bi";
 
 const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   const [newMember, setNewMember] = useState("");
@@ -53,8 +53,9 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
 
 const Group = () => {
   const { groupName } = useParams();
-  const { groups, setGroups } = useExpenses();
+  const { groups, setGroups, groupExpenses, username } = useExpenses();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   const decodedGroupName = decodeURIComponent(groupName);
   const group = groups.find((g) => g.name === decodedGroupName);
@@ -95,12 +96,32 @@ const Group = () => {
     setGroups(updatedGroups);
   };
 
+
+  const calculateOwedMoney = (member) => {
+    let owed = 0;
+    groupExpenses
+      .filter((expense) => expense.group === group.name)
+      .forEach((expense) => {
+        if (
+          expense.payer === username[0] &&
+          expense.splitAmong.includes(member)
+        ) {
+          owed += expense.value / expense.splitAmong.length;
+        } else if (
+          expense.payer === member &&
+          expense.splitAmong.includes(username[0])
+        ) {
+          owed -= expense.value / expense.splitAmong.length;
+        }
+      });
+    return owed;
+  };
   return (
     <Layout title={`Group: ${group.name}`}>
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
         <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Group Members
+            {group.name}
           </h3>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -114,17 +135,32 @@ const Group = () => {
             {group.members.map((member, index) => (
               <li
                 key={index}
-                className="px-4 py-4 sm:px-6 flex justify-between items-center"
+                className="px-4 py-4 w-full sm:px-6 flex justify-between items-center"
               >
-                <span>{member}</span>
-                {group.members.length > 2 && (
-                  <button
-                    onClick={() => removeMember(member)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <BiX size={20} />
-                  </button>
-                )}
+                <div>{member}</div>
+                <div className="flex items-center">
+                  {member !== username[0] && (
+                    <span className="mr-4 text-sm text-gray-500">
+                      {calculateOwedMoney(member) > 0
+                        ? `${member} owes you ₹${calculateOwedMoney(
+                            member
+                          ).toFixed(2)}`
+                        : calculateOwedMoney(member) < 0
+                        ? `You owe ${member} ₹${Math.abs(
+                            calculateOwedMoney(member)
+                          ).toFixed(2)}`
+                        : `You're settled with ${member}`}
+                    </span>
+                  )}
+                  {group.members.length > 2 && member !== username[0] && (
+                    <button
+                      onClick={() => removeMember(member)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <BiX size={25} />
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

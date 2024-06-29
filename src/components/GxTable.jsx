@@ -49,7 +49,7 @@ const GroupExpensesTable = () => {
                 <button onClick={() => setEditingExpense(expense)}>
                   <FaEdit fontSize="25px" />
                 </button>
-                <button onClick={() => deletePersonalExpense(expense.id)}>
+                <button onClick={() => deleteGroupExpense(expense.id)}>
                   <FaTrashCan className="text-red-500" fontSize="25px" />
                 </button>
               </td>

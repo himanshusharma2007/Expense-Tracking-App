@@ -10,12 +10,12 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
   const [description, setDescription] = useState("");
   const [expenseType, setExpenseType] = useState("personal");
   const [expenseValue, setExpenseValue] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("");
+const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
 
-  const { updatePersonalExpense, updateGroupExpense ,grops} = useExpenses();
+  const { updatePersonalExpense, updateGroupExpense ,groups} = useExpenses();
 //   const existingGroups = ["Family", "Friends", "Work"];
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
       setDescription(expense.desc);
       setExpenseValue(expense.value.toString());
       setExpenseType(expense.type);
-      setSelectedGroup(expense.group || "");
+     setSelectedGroup(expense.group ? expense.group.name : "");
       setSelectedDate(new Date(expense.date));
     }
   }, [expense]);
@@ -43,7 +43,10 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
       value: parseFloat(expenseValue),
       date: selectedDate,
       type: expenseType,
-      group: expenseType === "group" ? selectedGroup : null,
+      group:
+        expenseType === "group"
+          ? groups.find((g) => g.name === selectedGroup)
+          : null,
     };
 
     if (expenseType === "personal") {
@@ -164,8 +167,8 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
                   >
                     <option value="">Select a group</option>
                     {groups.map((group) => (
-                      <option key={group} value={group}>
-                        {group}
+                      <option key={group.name} value={group.name}>
+                        {group.name}
                       </option>
                     ))}
                   </select>

@@ -16,7 +16,8 @@ export const ExpenseProvider = ({ children }) => {
   const [groups, setGroups] = useState([]);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [username, setUsername] = useState(["",""]);
+  const [username, setUsername] = useState(["", ""]);
+
   useEffect(() => {
     const storedUserId = localStorage.getItem("trackexUserId");
     if (storedUserId) {
@@ -35,11 +36,6 @@ export const ExpenseProvider = ({ children }) => {
         setGroupExpenses(userData.groupExpenses || []);
         setGroups(userData.groups || []);
         setUsername([userData.firstName, userData.lastName || ""]);
-
-        console.log('userData.firstName :>> ', userData.firstName);
-        console.log('username :>> ', username);
-    
-        console.log("data is set from Firestore");
       }
       setIsLoading(false);
     }
@@ -69,70 +65,78 @@ export const ExpenseProvider = ({ children }) => {
     updateFirestore();
   }, [userId, personalExpenses, groupExpenses, groups, isLoading]);
 
-  // ... rest of your existing context code ...
+const addPersonalExpense = useCallback((expense) => {
+  const expenseWithTimestamp = {
+    ...expense,
+    timestamp: new Date().toISOString(),
+  };
+  setPersonalExpenses((prev) => [...prev, expenseWithTimestamp]);
+}, []);
 
-  const addPersonalExpense = useCallback((expense) => {
-    setPersonalExpenses((prev) => [...prev, expense]);
-  }, []);
+const addGroupExpense = useCallback((expense) => {
+  const expenseWithTimestamp = {
+    ...expense,
+    timestamp: new Date().toISOString(),
+  };
+  setGroupExpenses((prev) => [...prev, expenseWithTimestamp]);
+}, []);
 
-  const addGroupExpense = useCallback((expense) => {
-    setGroupExpenses((prev) => [...prev, expense]);
-  }, []);
-
-  const updatePersonalExpense = (updatedExpense) => {
-    setPersonalExpenses(
-      personalExpenses.map((expense) =>
+  const updatePersonalExpense = useCallback((updatedExpense) => {
+    setPersonalExpenses((prev) =>
+      prev.map((expense) =>
         expense.id === updatedExpense.id ? updatedExpense : expense
       )
     );
-  };
+  }, []);
 
-  const updateGroupExpense = (updatedExpense) => {
-    setGroupExpenses(
-      groupExpenses.map((expense) =>
+  const updateGroupExpense = useCallback((updatedExpense) => {
+    setGroupExpenses((prev) =>
+      prev.map((expense) =>
         expense.id === updatedExpense.id ? updatedExpense : expense
       )
     );
-  };
+  }, []);
 
-  const deletePersonalExpense = (id) => {
-    setPersonalExpenses(
-      personalExpenses.filter((expense) => expense.id !== id)
-    );
-  };
+  const deletePersonalExpense = useCallback((id) => {
+    setPersonalExpenses((prev) => prev.filter((expense) => expense.id !== id));
+  }, []);
 
-  const deleteGroupExpense = (id) => {
-    setGroupExpenses(groupExpenses.filter((expense) => expense.id !== id));
-  };
+  const deleteGroupExpense = useCallback((id) => {
+    setGroupExpenses((prev) => prev.filter((expense) => expense.id !== id));
+  }, []);
 
-  const addMemberToGroup = (groupName, member) => {
-    setGroups(
-      groups.map((group) =>
-        group.name === groupName
-          ? { ...group, members: [...group.members, member] }
-          : group
-      )
-    );
+const addMemberToGroup = useCallback((groupName, member) => {
+  setGroups((prev) =>
+    prev.map((group) =>
+      group.name === groupName
+        ? {
+            ...group,
+            members: [...group.members, member],
+            timestamp: new Date().toISOString(),
+          }
+        : group
+    )
+  );
+}, []);
+
+  const contextValue = {
+    personalExpenses,
+    groupExpenses,
+    groups,
+    username,
+    setGroups,
+    addPersonalExpense,
+    addGroupExpense,
+    updatePersonalExpense,
+    updateGroupExpense,
+    deletePersonalExpense,
+    deleteGroupExpense,
+    addMemberToGroup,
+    userId,
   };
 
   return (
-    <ExpenseContext.Provider
-      value={{
-        personalExpenses,
-        groupExpenses,
-        groups,
-        username,
-        setGroups,
-        addPersonalExpense,
-        addGroupExpense,
-        updatePersonalExpense,
-        updateGroupExpense,
-        deletePersonalExpense,
-        deleteGroupExpense,
-        addMemberToGroup,
-        userId, // Add userId to the context value
-      }}
-    >
+    <ExpenseContext.Provider value={contextValue}>
       {children}
     </ExpenseContext.Provider>
   );

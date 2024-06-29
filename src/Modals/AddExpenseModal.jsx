@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useExpenses } from "../components/ExpenseContext";
@@ -26,8 +26,37 @@ const AddExpenseModal = ({
 
   if (!isOpen) return null;
 
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (expenseType === "group" && splitMethod === "equal") {
+      setSplitAmong(
+        groups.find((g) => g.name === selectedGroup)?.members || []
+      );
+    }
+  }, [expenseType, splitMethod, selectedGroup, groups]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!title.trim()) newErrors.title = "Title is required";
+    if (!amount || amount <= 0) newErrors.amount = "Valid amount is required";
+    if (expenseType === "group" && !payer)
+      newErrors.payer = "Payer is required";
+    if (
+      expenseType === "group" &&
+      splitMethod === "custom" &&
+      splitAmong.length === 0
+    ) {
+      newErrors.splitAmong = "Select at least one person to split among";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     const newExpense = {
       id: uuidv4(),
       title: title,
@@ -36,7 +65,7 @@ const AddExpenseModal = ({
       date: date,
       type: expenseType,
       group: expenseType === "group" ? selectedGroup : null,
-      payer: payer,
+      payer: payer === "everyone" ? "everyone" : payer,
       splitMethod: splitMethod,
       expenseCategory: expenseType === "personal" ? expenseCategory : null,
       splitAmong: expenseType === "group" ? splitAmong : null,
@@ -51,7 +80,6 @@ const AddExpenseModal = ({
 
     onClose();
   };
-
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
       <div className="relative bg-white rounded-lg p-8 m-4 max-w-4xl w-full">
@@ -132,9 +160,12 @@ const AddExpenseModal = ({
                   <select
                     value={payer}
                     onChange={(e) => setPayer(e.target.value)}
-                    className="w-full p-2 border rounded"
+                    className={`w-full p-2 border rounded ${
+                      errors.payer ? "border-red-500" : ""
+                    }`}
                   >
                     <option value="">Select payer</option>
+                    <option value="everyone">Everyone</option>
                     {groups
                       .find((g) => g.name === selectedGroup)
                       ?.members.map((member) => (
@@ -143,6 +174,9 @@ const AddExpenseModal = ({
                         </option>
                       ))}
                   </select>
+                  {errors.payer && (
+                    <p className="text-red-500 text-sm mt-1">{errors.payer}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -161,7 +195,7 @@ const AddExpenseModal = ({
             )}
           </div>
 
-          {expenseType === "group" && (
+          {expenseType === "group" && splitMethod === "custom" && (
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Split Among
@@ -189,6 +223,9 @@ const AddExpenseModal = ({
                     </label>
                   ))}
               </div>
+              {errors.splitAmong && (
+                <p className="text-red-500 text-sm mt-1">{errors.splitAmong}</p>
+              )}
             </div>
           )}
 
