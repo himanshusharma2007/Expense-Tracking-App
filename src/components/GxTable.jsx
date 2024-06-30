@@ -4,7 +4,7 @@ import EditExpenseModal from "../Modals/EditExpenseModal";
 import { FaTrashCan } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 
-const GroupExpensesTable = () => {
+const GroupExpensesTable = ({ gheading }) => {
   const { groupExpenses, deleteGroupExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
 
@@ -24,7 +24,9 @@ const GroupExpensesTable = () => {
 
   return (
     <div className="overflow-x-auto my-4">
-      <h2 className="text-lg font-semibold mb-2">Group Expenses</h2>
+      {gheading && (
+        <h2 className="text-lg font-semibold mb-2">Group Expenses</h2>
+      )}
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr className="w-full bg-gray-100">

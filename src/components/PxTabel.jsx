@@ -10,7 +10,7 @@ const formatDate = (dateString) => {
   return isNaN(date.getTime()) ? "" : date.toLocaleDateString();
 };
 
-const PersonalExpensesTable = () => {
+const PersonalExpensesTable = ({ pheading }) => {
   const { personalExpenses, deletePersonalExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
 
@@ -24,7 +24,9 @@ const PersonalExpensesTable = () => {
 
   return (
     <div className="overflow-x-auto my-4">
-      <h2 className="text-lg font-semibold mb-2">Personal Expenses</h2>
+        {pheading && (
+          <h2 className="text-lg font-semibold mb-2">Personal Expenses</h2>
+        )}
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr className="w-full bg-gray-100">

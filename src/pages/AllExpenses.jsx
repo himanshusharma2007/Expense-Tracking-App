@@ -19,8 +19,8 @@ const AllExpensesPage = () => {
 
   return (
     <Layout title="All Expenses">
-      <PersonalExpensesTable />
-      <GroupExpensesTable />
+      <PersonalExpensesTable pheading/>
+      <GroupExpensesTable gheading />
     </Layout>
   );
 };

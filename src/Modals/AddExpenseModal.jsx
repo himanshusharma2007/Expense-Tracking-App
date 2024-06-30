@@ -36,27 +36,27 @@ const AddExpenseModal = ({
     }
   }, [expenseType, splitMethod, selectedGroup, groups]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!title.trim()) newErrors.title = "Title is required";
-    if (!amount || amount <= 0) newErrors.amount = "Valid amount is required";
-    if (expenseType === "group" && !payer)
-      newErrors.payer = "Payer is required";
-    if (
-      expenseType === "group" &&
-      splitMethod === "custom" &&
-      splitAmong.length === 0
-    ) {
-      newErrors.splitAmong = "Select at least one person to split among";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+ const validateForm = () => {
+   const newErrors = {};
+   if (!title.trim()) newErrors.title = "Title is required";
+   if (!date) newErrors.date = "Date is required";
+   if (!amount || amount <= 0) newErrors.amount = "Valid amount is required";
+   if (expenseType === "group" && !payer) newErrors.payer = "Payer is required";
+   if (
+     expenseType === "group" &&
+     splitMethod === "custom" &&
+     splitAmong.length === 0
+   ) {
+     newErrors.splitAmong = "Select at least one person to split among";
+   }
+   setErrors(newErrors);
+   return newErrors;
+ };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) return;
     const newExpense = {
       id: uuidv4(),
       title: title,
@@ -82,10 +82,10 @@ const AddExpenseModal = ({
   };
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-      <div className="relative bg-white rounded-lg p-8 m-4 max-w-4xl w-full">
+      <div className="relative bg-white rounded-lg p-4 md:p-8 m-4 max-w-4xl w-full">
         <h2 className="text-2xl font-bold mb-6">Add Expense Details</h2>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Title
@@ -97,6 +97,9 @@ const AddExpenseModal = ({
                 className="w-full p-2 border rounded"
                 placeholder="Enter expense title"
               />
+              {errors.title && (
+                <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -121,10 +124,10 @@ const AddExpenseModal = ({
                 className="w-full p-2 border rounded"
                 placeholder="Enter amount"
               />
+              {errors.amount && (
+                <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
+              )}
             </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-6 mt-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date
@@ -134,7 +137,11 @@ const AddExpenseModal = ({
                 onChange={(date) => setDate(date)}
                 className="w-full p-2 border rounded"
               />
+              {errors.date && (
+                <p className="text-red-500 text-sm mt-1">{errors.date}</p>
+              )}
             </div>
+
             {expenseType === "personal" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

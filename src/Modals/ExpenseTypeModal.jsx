@@ -10,7 +10,7 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-      <div className="relative bg-white rounded-lg p-8 m-4 max-w-xl w-full">
+      <div className="relative bg-white rounded-lg p-4 md:p-8 m-4 max-w-xl w-full">
         <h2 className="text-2xl font-bold mb-4">Add an expense</h2>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useExpenses } from "../components/ExpenseContext";
-
+import { v4 as uuidv4 } from "uuid";
 const NewGroupModal = ({ onClose }) => {
   const { setGroups, groups, username } = useExpenses();
   const [groupName, setGroupName] = useState("");
@@ -22,7 +22,15 @@ const NewGroupModal = ({ onClose }) => {
         alert("Please add at least 1 other member to the group.");
         return;
       }
-      setGroups([...groups, { name: groupName.trim(), members }]);
+      setGroups([
+        ...groups,
+        {
+          id: uuidv4(),
+          name: groupName.trim(),
+          members,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
       setGroupName("");
       setMemberNames([""]);
       onClose();

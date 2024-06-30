@@ -1,11 +1,9 @@
 import React from "react";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
-import { FaMoneyBillWave, FaUsers, FaEdit, FaTrash } from "react-icons/fa";
+import { FaMoneyBillWave, FaUsers } from "react-icons/fa";
 
 const ActivityItem = ({ icon, content, timestamp, type }) => {
- 
-
   const getColorClass = () => {
     switch (type) {
       case "add":
@@ -78,8 +76,8 @@ const Activity = () => {
 
   return (
     <Layout title="Activity">
-        <Empty />
-      <div className="max-w-3xl  mx-auto bg-white shadow-lg rounded-lg overflow-hidden mt-10">
+      <Empty />
+      <div className="max-w-3xl mx-4 md:mx-auto  shadow-lg rounded-lg overflow-hidden ">
         <div className="divide-y divide-gray-200">
           {allActivities.map((activity, index) => {
             let icon, content, type;
