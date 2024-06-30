@@ -24,16 +24,16 @@ const PersonalExpensesTable = ({ pheading }) => {
 
   return (
     <div className="overflow-x-auto my-4">
-        {pheading && (
-          <h2 className="text-lg font-semibold mb-2">Personal Expenses</h2>
-        )}
+      {pheading && (
+        <h2 className="text-lg font-semibold mb-2">Personal Expenses</h2>
+      )}
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr className="w-full bg-gray-100">
             <th className="py-2 px-4 border-b">Date</th>
             <th className="py-2 px-4 border-b">Title</th>
             <th className="py-2 px-4 border-b">Description</th>
-            <th className="py-2 px-4 border-b">Value</th>
+            <th className="py-2 px-4 border-b">Amount</th>
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
         </thead>
@@ -43,7 +43,7 @@ const PersonalExpensesTable = ({ pheading }) => {
               <td className="py-2 px-4 border-b">{formatDate(expense.date)}</td>
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">{expense.desc}</td>
-              <td className="py-2 px-4 border-b">{expense.value}</td>
+              <td className="py-2 px-4 border-b">₹{expense.value}</td>
               <td className="py-2 px-4 border-b flex items-center justify-center space-x-3">
                 <button onClick={() => setEditingExpense(expense)}>
                   <FaEdit fontSize="25px" />

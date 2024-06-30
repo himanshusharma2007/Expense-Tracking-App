@@ -33,7 +33,7 @@ const GroupExpensesTable = ({ gheading }) => {
             <th className="py-2 px-4 border-b">Date</th>
             <th className="py-2 px-4 border-b">Title</th>
             <th className="py-2 px-4 border-b">Description</th>
-            <th className="py-2 px-4 border-b">Value</th>
+            <th className="py-2 px-4 border-b">Amount</th>
             <th className="py-2 px-4 border-b">Group</th>
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
@@ -45,7 +45,7 @@ const GroupExpensesTable = ({ gheading }) => {
 
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">{expense.desc}</td>
-              <td className="py-2 px-4 border-b">{expense.value}</td>
+              <td className="py-2 px-4 border-b">₹{expense.value}</td>
               <td className="py-2 px-4 border-b">{expense.group}</td>
               <td className="py-2 px-4 border-b flex items-center justify-center space-x-3">
                 <button onClick={() => setEditingExpense(expense)}>

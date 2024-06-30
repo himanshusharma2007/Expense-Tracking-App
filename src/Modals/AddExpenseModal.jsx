@@ -171,7 +171,7 @@ const AddExpenseModal = ({
                       errors.payer ? "border-red-500" : ""
                     }`}
                   >
-                    <option value="">Select payer</option>
+                   
                     <option value="everyone">Everyone</option>
                     {groups
                       .find((g) => g.name === selectedGroup)
