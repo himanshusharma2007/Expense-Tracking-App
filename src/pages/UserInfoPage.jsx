@@ -1,27 +1,11 @@
 // UserInfoPage.jsx
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { createOrGetUser, getUserData } from "../utils/firebaseUtils";
+import { createOrGetUser } from "../utils/firebaseUtils";
 
 const UserInfoPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkExistingUser = async () => {
-      const userId = localStorage.getItem("trackexUserId");
-      if (userId) {
-        const userData = await getUserData(userId);
-        if (userData) {
-         
-          navigate("/dashboard");
-        }
-      }
-    };
-
-    checkExistingUser();
-  }, [navigate]);
+ 
 
   const handleContinue = async () => {
     if (firstName && lastName) {

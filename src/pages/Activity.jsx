@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
 import { FaMoneyBillWave, FaUsers } from "react-icons/fa";
-
+import formatTimestamp from "../utils/dateFormatters";
 const ActivityItem = ({ icon, content, timestamp, type }) => {
   const getColorClass = () => {
     switch (type) {
@@ -28,28 +28,6 @@ const ActivityItem = ({ icon, content, timestamp, type }) => {
       </div>
     </div>
   );
-};
-
-const formatTimestamp = (timestamp) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffTime = Math.abs(now - date);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays <= 7) {
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    return `${days[date.getDay()]} at ${date.toLocaleTimeString()}`;
-  } else {
-    return date.toLocaleString();
-  }
 };
 
 const Activity = () => {
@@ -107,7 +85,7 @@ const Activity = () => {
                 key={index}
                 icon={icon}
                 content={content}
-                timestamp={formatTimestamp(activity.timestamp)}
+                timestamp={formatTimestamp(activity.timestamp , true)}
                 type={type}
               />
             );

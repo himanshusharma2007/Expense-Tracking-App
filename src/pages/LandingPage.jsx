@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import { getUserData } from "../utils/firebaseUtils";
 const LandingPage = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkExistingUser = async () => {
+      const userId = localStorage.getItem("trackexUserId");
+      if (userId) {
+        const userData = await getUserData(userId);
+        if (userData) {
+          navigate("/dashboard");
+        }
+      }
+    };
+
+    checkExistingUser();
+  }, [navigate]);
   return (
     <div className="min-h-screen pattern flex flex-col justify-between px-4">
       <div className="h-[12vh] px-4 flex items-end mb-10 md:mb-0">

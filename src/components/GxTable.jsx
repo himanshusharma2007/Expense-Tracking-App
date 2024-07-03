@@ -3,16 +3,12 @@ import { useExpenses } from "./ExpenseContext";
 import EditExpenseModal from "../Modals/EditExpenseModal";
 import { FaTrashCan } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
-
+import formatTimestamp from '../utils/dateFormatters'
 const GroupExpensesTable = ({ gheading }) => {
   const { groupExpenses, deleteGroupExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return isNaN(date.getTime()) ? "" : date.toLocaleDateString();
-  };
+ 
 
   if (groupExpenses.length === 0) {
     return (
@@ -41,7 +37,9 @@ const GroupExpensesTable = ({ gheading }) => {
         <tbody>
           {groupExpenses.map((expense) => (
             <tr key={expense.id} className="text-center">
-              <td className="py-2 px-4 border-b">{formatDate(expense.date)}</td>
+              <td className="py-2 px-4 border-b">
+                {formatTimestamp(expense.timestamp , false)}
+              </td>
 
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">{expense.desc}</td>

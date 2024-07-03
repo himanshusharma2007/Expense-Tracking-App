@@ -5,6 +5,8 @@ import { format, isValid } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { IoAnalytics } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
+import formatTimestamp from "../utils/dateFormatters";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { username, personalExpenses, groupExpenses } = useExpenses();
@@ -57,15 +59,22 @@ const Dashboard = () => {
       0
     );
 
-    const highestExpenseThisMonth = personalExpenses
-      .filter((expense) => {
-        const expenseDate = new Date(expense.date);
-        return (
-          expenseDate.getMonth() === currentMonth &&
-          expenseDate.getFullYear() === currentYear
-        );
-      })
-      .reduce((max, expense) => Math.max(max, expense.value), 0);
+    const highestExpenseThisMonth = personalExpenses.reduce((max, expense) => {
+      const expenseDate = new Date(expense.date);
+      if (
+        expenseDate.getMonth() === currentMonth &&
+        expenseDate.getFullYear() === currentYear
+      ) {
+        return Math.max(max, expense.value);
+      }
+      return max;
+    }, 0);
+
+    // If no expenses this month, find the highest expense overall
+    const highestExpenseOverall = personalExpenses.reduce(
+      (max, expense) => (expense.value > max.value ? expense : max),
+      { value: 0 }
+    );
 
     const moneyBorrowed = personalExpenses
       .filter((expense) => expense.expenseCategory === "borrowed")
@@ -109,7 +118,11 @@ const Dashboard = () => {
 
     return {
       totalPersonalExpense,
-      highestExpenseThisMonth,
+
+      highestExpenseThisMonth:
+        highestExpenseThisMonth || highestExpenseOverall.value,
+      highestExpenseOverall,
+
       moneyBorrowed,
       totalGroupExpense,
       youOweFromPeople,
@@ -121,10 +134,7 @@ const Dashboard = () => {
 
   const ExpenseTable = ({ title, expense, group }) => {
     if (!expense) return null;
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return isValid(date) ? format(date, "MMM dd, yyyy") : "Invalid Date";
-    };
+
     return (
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-4 text-gray-800">{title}</h3>
@@ -132,32 +142,32 @@ const Dashboard = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Title
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {group ? "Group" : "Category"}
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {expense.title}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm text-gray-500">
                   ₹{expense.value.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(expense.date)}
+                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm text-gray-500">
+                  {formatTimestamp(expense.timestamp, true)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm text-gray-500">
                   {expense.type === "personal"
                     ? expense.expenseCategory
                     : expense.group}
@@ -258,29 +268,16 @@ const Dashboard = () => {
           </ul>
         );
       case "highestExpense":
-        const highestExpense = personalExpenses.reduce(
-          (max, expense) => (expense.value > max.value ? expense : max),
-          { value: 0 }
-        );
-        let formattedDate = "Invalid Date";
-        try {
-          const expenseDate = new Date(expense.date);
-          if (isValid(expenseDate)) {
-            formattedDate = format(expenseDate, "MMM dd, yyyy");
-          }
-        } catch (error) {
-          console.error("Error formatting date:", error);
-        }
+        const highestExpense = dashboardData.highestExpenseOverall;
+
         return (
           <div>
             <p>Highest expense: {highestExpense.title}</p>
             <p>Amount: ₹{highestExpense.value.toFixed(2)}</p>
-            <p>Date:{formattedDate}</p>
+            <p>Date: {formatTimestamp(highestExpense.timestamp)}</p>
             <p>Category: {highestExpense.expenseCategory}</p>
           </div>
         );
-      default:
-        return null;
     }
   };
   return (
@@ -290,20 +287,34 @@ const Dashboard = () => {
           <IoAnalytics fontSize="30px" /> <div>Statistics</div>
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 align-middle">
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-4 text-gray-700">
               Personal Expenses
             </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">Total Personal Expense</p>
-                <p
-                  className="text-2xl font-bold text-green-600 cursor-pointer"
-                  onClick={() => navigate("/personal-expenses")}
-                >
-                  ₹{dashboardData.totalPersonalExpense}
-                </p>
+            <div className="flex md:flex-row flex-col justify-center  gap-4">
+              <div className="wraper flex flex-col space-y-3">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Total Personal Expense
+                  </p>
+                  <p
+                    className="text-2xl font-bold text-green-600 cursor-pointer"
+                    onClick={() => navigate("/personal-expenses")}
+                  >
+                    ₹{dashboardData.totalPersonalExpense}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-600">Money You Borrowed</p>
+                  <p
+                    className="text-2xl font-bold text-red-600 cursor-pointer"
+                    onClick={() => openModal({ type: "moneyBorrowed" })}
+                  >
+                    ₹{dashboardData.moneyBorrowed}
+                  </p>
+                </div>
               </div>
               <div>
                 <p className="text-sm text-gray-600">
@@ -313,16 +324,7 @@ const Dashboard = () => {
                   className="text-2xl font-bold text-yellow-600 cursor-pointer"
                   onClick={() => openModal({ type: "highestExpense" })}
                 >
-                  ₹{dashboardData.highestExpenseThisMonth}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Money You Borrowed</p>
-                <p
-                  className="text-2xl font-bold text-red-600 cursor-pointer"
-                  onClick={() => openModal({ type: "moneyBorrowed" })}
-                >
-                  ₹{dashboardData.moneyBorrowed}
+                  ₹{dashboardData.highestExpenseThisMonth.toFixed(2)}
                 </p>
               </div>
             </div>
