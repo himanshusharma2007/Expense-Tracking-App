@@ -81,7 +81,7 @@ const AddExpenseModal = ({
     onClose();
   };
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-auto w-full z-50 flex justify-center items-center">
       <div className="relative bg-white rounded-lg p-4 md:p-8 m-4 max-w-4xl w-full">
         <h2 className="text-2xl font-bold mb-6">Add Expense Details</h2>
         <form onSubmit={handleSubmit}>

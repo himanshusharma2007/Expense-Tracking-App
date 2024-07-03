@@ -19,7 +19,7 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center ">
       <div className="bg-white p-5 rounded-lg shadow-lg w-96">
         <h3 className="text-lg font-semibold mb-4">Add New Member</h3>
         <form onSubmit={handleSubmit}>
@@ -118,7 +118,7 @@ const Group = () => {
   };
   return (
     <Layout title={`Group: ${group.name}`}>
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6  mx-2">
         <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             {group.name}

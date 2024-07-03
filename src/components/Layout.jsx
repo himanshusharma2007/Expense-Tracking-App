@@ -129,7 +129,7 @@ const Layout = ({ children, title }) => {
     return (
       <div
         ref={userModalRef}
-        className="absolute w-64 bg-white top-16 right-4 rounded-lg shadow-lg z-50"
+        className="absolute w-64 bg-white top-16 right-0 rounded-lg shadow-lg z-50"
       >
         <div className="p-4 border-b">
           <h3 className="text-lg font-semibold text-gray-800">{username}</h3>
@@ -279,20 +279,20 @@ const Layout = ({ children, title }) => {
                   </Drawer>
                 </>
               )}
-              <h1 className="text-4xl sm:text-3xl font-bold text-gray-800 mb-1 md:mb-4 sm:mb-0">
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-1 md:mb-4 sm:mb-0">
                 {title}
               </h1>
             </div>
             <button
               onClick={handleAddExpense}
               className="absolute top-14 right-4 md:right-0
-                bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 w-auto"
+                bg-zinc-600 hover:bg-zinc-800 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 w-auto"
             >
-              {isMobile ? <FaPlus fontSize={25} /> : "Add New Expense"}
+              {isMobile ? <FaPlus fontSize={16} /> : "Add New Expense"}
             </button>
             <div className="user flex flex-row-reverse  items-center justify-center relative  ">
               <button onClick={() => setUserModal(!userModal)}>
-                <FaUser fontSize={30} className="mb-3 ml-4" />
+                <FaUser fontSize={25} className="mb-3 ml-4" />
               </button>
               {userModal && <UserModal />}
               {firstName && !isMobile ? (

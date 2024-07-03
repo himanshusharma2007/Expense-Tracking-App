@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { IoAnalytics } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
 import formatTimestamp from "../utils/dateFormatters";
+import ExpenseTable from "../components/ExpenseTable";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,7 +21,9 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-auto animate-fade-in-up">
           <div className="border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">{title}</h3>
+              <h3 className="text-lg md:text-xl font-medium text-gray-900">
+                {title}
+              </h3>
             </div>
           </div>
           <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
@@ -132,53 +135,8 @@ const Dashboard = () => {
     };
   }, [personalExpenses, groupExpenses, username]);
 
-  const ExpenseTable = ({ title, expense, group }) => {
-    if (!expense) return null;
+  
 
-    return (
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">{title}</h3>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title
-                </th>
-                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {group ? "Group" : "Category"}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {expense.title}
-                </td>
-                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm text-gray-500">
-                  ₹{expense.value.toFixed(2)}
-                </td>
-                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatTimestamp(expense.timestamp, true)}
-                </td>
-                <td className="px-6 text-center  py-4 whitespace-nowrap text-sm text-gray-500">
-                  {expense.type === "personal"
-                    ? expense.expenseCategory
-                    : expense.group}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  };
   const openModal = (content) => {
     setModalContent(content);
   };
@@ -204,7 +162,7 @@ const Dashboard = () => {
                     ? expense.value / expense.splitAmong.length
                     : expense.splitAmounts[username[0]] || 0;
                 return (
-                  <li key={index} className="mb-2">
+                  <li key={index} className="mb-2 text-sm md:text-base">
                     You owe {expense.payer} ₹{yourShare.toFixed(2)} for "
                     {expense.title}"
                   </li>
@@ -226,7 +184,10 @@ const Dashboard = () => {
                         ? expense.value / expense.splitAmong.length
                         : expense.splitAmounts[member] || 0;
                     return (
-                      <li key={`${index}-${memberIndex}`} className="mb-2">
+                      <li
+                        key={`${index}-${memberIndex}`}
+                        className="mb-2 text-sm md:text-base"
+                      >
                         {member} owes you ₹{theirShare.toFixed(2)} for "
                         {expense.title}"
                       </li>
@@ -256,7 +217,7 @@ const Dashboard = () => {
                 }
 
                 return (
-                  <li key={index} className="mb-2">
+                  <li key={index} className="mb-2 text-sm md:text-base">
                     You borrowed ₹{expense.value.toFixed(2)} for "
                     {expense.title}"
                     {formattedDate !== "Invalid Date"
@@ -271,7 +232,7 @@ const Dashboard = () => {
         const highestExpense = dashboardData.highestExpenseOverall;
 
         return (
-          <div>
+          <div className="text-sm md:text-base">
             <p>Highest expense: {highestExpense.title}</p>
             <p>Amount: ₹{highestExpense.value.toFixed(2)}</p>
             <p>Date: {formatTimestamp(highestExpense.timestamp, true)}</p>
@@ -280,48 +241,51 @@ const Dashboard = () => {
         );
     }
   };
+
   return (
     <Layout title="Dashboard">
-      <div className="p-6 bg-gray-100 rounded-lg shadow-lg">
-        <h1 className="flex items-center space-x-3 text-3xl font-semibold mb-6 text-gray-800">
-          <IoAnalytics fontSize="30px" /> <div>Statistics</div>
+      <div className="px-3 md:p-6 bg-gray-100 rounded-lg md:shadow-lg">
+        <h1 className="flex items-center space-x-3 text-2xl md:text-3xl font-semibold mb-6 text-gray-800">
+          <IoAnalytics className="text-[24px] md:text-[30px]" />
+          <div>Statistics</div>
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 align-middle">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 text-gray-700">
               Personal Expenses
             </h2>
-            <div className="flex md:flex-row flex-col justify-center  gap-4">
-              <div className="wraper flex flex-col space-y-3">
-                <div>
-                  <p className="text-sm text-gray-600">
-                    Total Personal Expense
-                  </p>
-                  <p
-                    className="text-2xl font-bold text-green-600 cursor-pointer"
-                    onClick={() => navigate("/personal-expenses")}
-                  >
-                    ₹{dashboardData.totalPersonalExpense}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-600">Money You Borrowed</p>
-                  <p
-                    className="text-2xl font-bold text-red-600 cursor-pointer"
-                    onClick={() => openModal({ type: "moneyBorrowed" })}
-                  >
-                    ₹{dashboardData.moneyBorrowed}
-                  </p>
-                </div>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs md:text-sm text-gray-600">
+                  Total Personal Expense
+                </p>
+                <p
+                  className="text-xl md:text-2xl font-bold text-green-600 cursor-pointer"
+                  onClick={() => navigate("/personal-expenses")}
+                >
+                  ₹{dashboardData.totalPersonalExpense}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs md:text-sm text-gray-600">
+                  Money You Borrowed
+                </p>
+                <p
+                  className="text-xl md:text-2xl font-bold text-red-600 cursor-pointer"
+                  onClick={() => openModal({ type: "moneyBorrowed" })}
+                >
+                  ₹{dashboardData.moneyBorrowed}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs md:text-sm text-gray-600">
                   Highest Expense This Month
                 </p>
                 <p
-                  className="text-2xl font-bold text-yellow-600 cursor-pointer"
+                  className="text-xl md:text-2xl font-bold text-yellow-600 cursor-pointer"
                   onClick={() => openModal({ type: "highestExpense" })}
                 >
                   ₹{dashboardData.highestExpenseThisMonth.toFixed(2)}
@@ -330,33 +294,39 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 text-gray-700">
               Group Expenses
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">Total Group Expense</p>
+                <p className="text-xs md:text-sm text-gray-600">
+                  Total Group Expense
+                </p>
                 <p
-                  className="text-2xl font-bold text-blue-600 cursor-pointer"
+                  className="text-xl md:text-2xl font-bold text-blue-600 cursor-pointer"
                   onClick={() => navigate("/group-expenses")}
                 >
                   ₹{dashboardData.totalGroupExpense}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">You Owe From People</p>
+                <p className="text-xs md:text-sm text-gray-600">
+                  You Owe From People
+                </p>
                 <p
-                  className="text-2xl font-bold text-orange-600 cursor-pointer"
+                  className="text-xl md:text-2xl font-bold text-orange-600 cursor-pointer"
                   onClick={() => openModal({ type: "youOwe" })}
                 >
                   ₹{dashboardData.youOweFromPeople.toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">People Owe You</p>
+                <p className="text-xs md:text-sm text-gray-600">
+                  People Owe You
+                </p>
                 <p
-                  className="text-2xl font-bold text-purple-600 cursor-pointer"
+                  className="text-xl md:text-2xl font-bold text-purple-600 cursor-pointer"
                   onClick={() => openModal({ type: "peopleOweYou" })}
                 >
                   ₹{dashboardData.peopleOweYou.toFixed(2)}
@@ -366,9 +336,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="mt-4 p-6 bg-gray-100 rounded-lg shadow-lg">
-        <h2 className="flex space-x-3 text-3xl items-center font-semibold mb-6 text-gray-800">
-          <FaHistory fontSize="30px" />
+      <div className="mt-4 p-4 md:p-6 bg-gray-100 rounded-lg md:shadow-lg">
+        <h2 className="flex space-x-3 text-2xl md:text-3xl items-center font-semibold mb-6 text-gray-800">
+          <FaHistory className="text-[24px] md:text-[30px]" />
           <div>Latest Expenses</div>
         </h2>
         <p>
