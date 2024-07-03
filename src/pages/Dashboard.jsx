@@ -274,7 +274,7 @@ const Dashboard = () => {
           <div>
             <p>Highest expense: {highestExpense.title}</p>
             <p>Amount: ₹{highestExpense.value.toFixed(2)}</p>
-            <p>Date: {formatTimestamp(highestExpense.timestamp)}</p>
+            <p>Date: {formatTimestamp(highestExpense.timestamp, true)}</p>
             <p>Category: {highestExpense.expenseCategory}</p>
           </div>
         );

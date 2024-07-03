@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BiChevronDown, BiChevronUp, BiUserCircle } from "react-icons/bi";
 import { FaEdit, FaPlus, FaTrashAlt, FaUser } from "react-icons/fa";
 import {
@@ -41,7 +41,38 @@ const Layout = ({ children, title }) => {
   const [editingGroupId, setEditingGroupId] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
   const { username } = useExpenses();
+  const [userModal, setUserModal] = useState(false);
   let firstName = username[0];
+  const userModalRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        userModalRef.current &&
+        !userModalRef.current.contains(event.target)
+      ) {
+        setUserModal(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to log out? All your data will be erased forever."
+      )
+    ) {
+      localStorage.removeItem("trackexUserId");
+      navigate("/");
+    }
+  };
+
   const handleAddExpense = () => {
     setShowExpenseTypeModal(true);
   };
@@ -94,7 +125,31 @@ const Layout = ({ children, title }) => {
     }
     setDrawerOpen(open);
   };
-
+  const UserModal = () => {
+    return (
+      <div
+        ref={userModalRef}
+        className="absolute w-64 bg-white top-16 right-4 rounded-lg shadow-lg z-50"
+      >
+        <div className="p-4 border-b">
+          <h3 className="text-lg font-semibold text-gray-800">{username}</h3>
+        </div>
+        <ul className="py-2">
+          <li className="px-4 py-2 text-sm text-gray-700">
+            All of your data is locally stored in your browser
+          </li>
+          <li className="px-4 py-2">
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded transition duration-300 ease-in-out"
+            >
+              Log out
+            </button>
+          </li>
+        </ul>
+      </div>
+    );
+  };
   const SidebarContent = () => (
     <nav className="mt-5">
       {sidebarItems.map((item) => (
@@ -200,7 +255,7 @@ const Layout = ({ children, title }) => {
 
       <main className="flex-1 relative overflow-x-hidden overflow-y-auto">
         <div className="container mx-auto  sm:px-6 py-4 sm:py-8">
-          <div className="flex flex-row justify-between items-center mb-4  px-4 md:px-0 ">
+          <div className="relative flex flex-row justify-between items-center mb-4  px-4 md:px-0 ">
             <div className="wraper flex space-x-3 items-center  ">
               {isMobile && (
                 <>
@@ -230,20 +285,24 @@ const Layout = ({ children, title }) => {
             </div>
             <button
               onClick={handleAddExpense}
-              className="absolute top-20 right-4 md:right-8
+              className="absolute top-14 right-4 md:right-0
                 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 w-auto"
             >
               {isMobile ? <FaPlus fontSize={25} /> : "Add New Expense"}
             </button>
-            {isMobile ? (
-              <FaUser fontSize={30} />
-            ) : (
-              firstName && (
+            <div className="user flex flex-row-reverse  items-center justify-center relative  ">
+              <button onClick={() => setUserModal(!userModal)}>
+                <FaUser fontSize={30} className="mb-3 ml-4" />
+              </button>
+              {userModal && <UserModal />}
+              {firstName && !isMobile ? (
                 <div className="username capitalize font-semibold text-xl sm:text-3xl text-center sm:text-right md:mb-4">
                   Welcome {firstName}
                 </div>
-              )
-            )}
+              ) : (
+                ""
+              )}
+            </div>
           </div>
           <div className="mt-14">{children}</div>
         </div>

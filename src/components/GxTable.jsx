@@ -7,7 +7,11 @@ import formatTimestamp from '../utils/dateFormatters'
 const GroupExpensesTable = ({ gheading }) => {
   const { groupExpenses, deleteGroupExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
-
+ const sortGroupExpenses = [
+   ...groupExpenses.sort(
+     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+   ),
+ ];
  
 
   if (groupExpenses.length === 0) {
@@ -38,7 +42,7 @@ const GroupExpensesTable = ({ gheading }) => {
           {groupExpenses.map((expense) => (
             <tr key={expense.id} className="text-center">
               <td className="py-2 px-4 border-b">
-                {formatTimestamp(expense.timestamp , false)}
+                {formatTimestamp(expense.timestamp , true)}
               </td>
 
               <td className="py-2 px-4 border-b">{expense.title}</td>

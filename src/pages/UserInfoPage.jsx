@@ -1,16 +1,17 @@
 // UserInfoPage.jsx
 import React, { useState, useEffect } from "react";
 import { createOrGetUser } from "../utils/firebaseUtils";
+import { useNavigate } from "react-router-dom";
 
 const UserInfoPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
- 
+  const navigate = useNavigate();
 
   const handleContinue = async () => {
     if (firstName && lastName) {
       await createOrGetUser(firstName, lastName);
-    
+
       navigate("/dashboard");
     } else {
       alert("Please enter both first name and last name.");

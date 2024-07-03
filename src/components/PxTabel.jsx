@@ -9,7 +9,11 @@ import formatTimestamp from '../utils/dateFormatters'
 const PersonalExpensesTable = ({ pheading }) => {
   const { personalExpenses, deletePersonalExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
-
+  const sortPersonalExpense = [
+    ...personalExpenses.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    ),
+  ];
   if (personalExpenses.length === 0) {
     return (
       <p className="text-center text-gray-500">
@@ -34,10 +38,10 @@ const PersonalExpensesTable = ({ pheading }) => {
           </tr>
         </thead>
         <tbody>
-          {personalExpenses.map((expense) => (
+          {sortPersonalExpense.map((expense) => (
             <tr key={expense.id} className="text-center">
               <td className="py-2 px-4 border-b">
-                {formatTimestamp(expense.timestamp , false)}
+                {formatTimestamp(expense.timestamp, true)}
               </td>
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">{expense.desc}</td>
