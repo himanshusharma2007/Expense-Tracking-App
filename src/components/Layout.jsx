@@ -205,9 +205,9 @@ const Layout = ({ children, title }) => {
                       to={`/group/${encodeURIComponent(group.name)}`}
                       onClick={isMobile ? toggleDrawer(false) : undefined}
                     >
-                      {group.name}
+                      <button className="w-full  text-left">{group.name}</button>
                     </Link>
-                    <div className="absolute right-0 top-1/2 transform -translate-y-1/2 hidden group-hover:flex items-center bg-gray-800 px-2 py-1 rounded">
+                    <div className="absolute right-0 top-1/2 transform -translate-y-1/2 hidden group-hover:flex items-center px-2 py-1 rounded ">
                       <button
                         onClick={(e) =>
                           handleEditGroup(group.id, group.name, e)

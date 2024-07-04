@@ -89,13 +89,46 @@ const addGroupExpense = useCallback((expense) => {
     );
   }, []);
 
-  const updateGroupExpense = useCallback((updatedExpense) => {
-    setGroupExpenses((prev) =>
-      prev.map((expense) =>
-        expense.id === updatedExpense.id ? updatedExpense : expense
-      )
-    );
-  }, []);
+const updateGroupExpense = useCallback((newExpense) => {
+  setGroupExpenses((prev) => {
+    const index = prev.findIndex((expense) => expense.id === newExpense.id);
+    if (index !== -1) {
+      // Update existing expense
+      return prev.map((expense) =>
+        expense.id === newExpense.id ? newExpense : expense
+      );
+    } else {
+      // Add new expense
+      return [...prev, newExpense];
+    }
+  });
+
+  // Recalculate balances
+  setGroups((prevGroups) => {
+    return prevGroups.map((group) => {
+      if (group.name === newExpense.group) {
+        const updatedBalances = { ...group.balances };
+
+        newExpense.splitAmong.forEach((member) => {
+          const memberShare =
+            newExpense.splitMethod === "equal"
+              ? newExpense.value / newExpense.splitAmong.length
+              : newExpense.splitAmounts[member] || 0;
+
+          if (member !== newExpense.payer) {
+            updatedBalances[member] =
+              (updatedBalances[member] || 0) - memberShare;
+            updatedBalances[newExpense.payer] =
+              (updatedBalances[newExpense.payer] || 0) + memberShare;
+          }
+        });
+
+        return { ...group, balances: updatedBalances };
+      }
+      return group;
+    });
+  });
+}, []);
 
   const deletePersonalExpense = useCallback((id) => {
     setPersonalExpenses((prev) => prev.filter((expense) => expense.id !== id));

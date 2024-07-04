@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
-import { BiX, BiPlus, BiPencil, BiTrash } from "react-icons/bi";
+import { BiX, BiPlus } from "react-icons/bi";
+import { FaHandshakeSimple } from "react-icons/fa6";
+import SettleUpModal from "../Modals/SettleUpModal";
 
 const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   const [newMember, setNewMember] = useState("");
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,13 +57,38 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
 const Group = () => {
   const { groupName } = useParams();
   const { groups, setGroups, groupExpenses, username } = useExpenses();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [isSettleUpModalOpen, setIsSettleUpModalOpen] = useState(false);
   const decodedGroupName = decodeURIComponent(groupName);
   const group = groups.find((g) => g.name === decodedGroupName);
 
-  if (!group) {
+  // Use useMemo to recalculate group data when groups or groupExpenses change
+  const groupData = useMemo(() => {
+    const group = groups.find((g) => g.name === decodedGroupName);
+    if (!group) return null;
+
+    // Recalculate balances based on groupExpenses
+    const balances = {};
+    groupExpenses.forEach((expense) => {
+      if (expense.group === decodedGroupName) {
+        expense.splitAmong.forEach((member) => {
+          const share =
+            expense.splitMethod === "equal"
+              ? expense.value / expense.splitAmong.length
+              : expense.splitAmounts[member] || 0;
+
+          if (member !== expense.payer) {
+            balances[member] = (balances[member] || 0) - share;
+            balances[expense.payer] = (balances[expense.payer] || 0) + share;
+          }
+        });
+      }
+    });
+
+    return { ...group, balances };
+  }, [groups, groupExpenses, decodedGroupName]);
+
+  if (!groupData) {
     return (
       <Layout title="Group Not Found">
         <div className="text-center text-red-500">
@@ -96,25 +124,10 @@ const Group = () => {
     setGroups(updatedGroups);
   };
 
-
+  // Group.jsx
   const calculateOwedMoney = (member) => {
-    let owed = 0;
-    groupExpenses
-      .filter((expense) => expense.group === group.name)
-      .forEach((expense) => {
-        if (
-          expense.payer === username[0] &&
-          expense.splitAmong.includes(member)
-        ) {
-          owed += expense.value / expense.splitAmong.length;
-        } else if (
-          expense.payer === member &&
-          expense.splitAmong.includes(username[0])
-        ) {
-          owed -= expense.value / expense.splitAmong.length;
-        }
-      });
-    return owed;
+    const groupBalance = groupData.balances && groupData.balances[member];
+    return groupBalance ? -groupBalance : 0;
   };
   return (
     <Layout title={`Group: ${group.name}`}>
@@ -123,12 +136,21 @@ const Group = () => {
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             {group.name}
           </h3>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <BiPlus className="inline mr-1" /> Add Member
-          </button>
+          <div className="btns flex items-center space-x-3">
+            <button
+              onClick={() => setIsAddMemberModalOpen(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <BiPlus className="inline mr-1" /> Add Member
+            </button>
+            <button
+              onClick={() => setIsSettleUpModalOpen(true)}
+              className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <FaHandshakeSimple fontSize={20} className="inline mr-1" /> Settle
+              Up
+            </button>
+          </div>
         </div>
         <div className="border-t border-gray-200">
           <ul className="divide-y divide-gray-200">
@@ -167,9 +189,14 @@ const Group = () => {
         </div>
       </div>
       <AddMemberModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isAddMemberModalOpen}
+        onClose={() => setisAddMemberModalOpen(false)}
         onAdd={addMember}
+      />
+      <SettleUpModal
+        isOpen={isSettleUpModalOpen}
+        onClose={() => setIsSettleUpModalOpen(false)}
+        groupName={decodedGroupName}
       />
     </Layout>
   );

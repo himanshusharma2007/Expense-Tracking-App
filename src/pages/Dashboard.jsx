@@ -88,16 +88,19 @@ const Dashboard = () => {
       0
     );
 
-    const youOweFromPeople = groupExpenses.reduce((sum, expense) => {
-      if (expense.payer !== username[0] && expense.payer !== "everyone") {
-        const yourShare =
-          expense.splitMethod === "equal"
-            ? expense.value / expense.splitAmong.length
-            : expense.splitAmounts[username[0]] || 0;
-        return sum + yourShare;
-      }
-      return sum;
-    }, 0);
+  const youOweFromPeople = groupExpenses.reduce((sum, expense) => {
+    if (expense.payer !== (username[0] || "") && expense.payer !== "everyone") {
+      const yourShare =
+        expense.splitMethod === "equal"
+          ? expense.value / (expense.splitAmong?.length || 1)
+          : (expense.splitAmounts &&
+              username[0] &&
+              expense.splitAmounts[username[0]]) ||
+            0;
+      return sum + yourShare;
+    }
+    return sum;
+  }, 0);
 
     const peopleOweYou = groupExpenses.reduce((sum, expense) => {
       if (expense.payer === username[0]) {

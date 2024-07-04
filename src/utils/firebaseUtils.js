@@ -12,16 +12,14 @@ export const createOrGetUser = async (firstName, lastName) => {
   }
 
   const userRef = doc(db, "users", userId);
-  const userSnap = await getDoc(userRef);
 
-  if (!userSnap.exists()) {
     // Create new user document
     await setDoc(userRef, {
       firstName,
       lastName,
       createdAt: new Date(),
     });
-  }
+  
 
   return userId;
 };
