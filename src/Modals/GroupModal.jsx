@@ -6,36 +6,50 @@ const NewGroupModal = ({ onClose }) => {
   const [groupName, setGroupName] = useState("");
   const [memberNames, setMemberNames] = useState([""]); // Start with one empty field for additional members
 
-  const handleAddGroup = () => {
-    if (groupName.trim() !== "") {
-      if (groups.some((group) => group.name === groupName.trim())) {
-        alert(
-          "A group with this name already exists. Please choose a different name."
-        );
-        return;
-      }
-      const members = [
-        username[0],
-        ...memberNames.filter((name) => name.trim() !== ""),
-      ];
-      if (members.length < 2) {
-        alert("Please add at least 1 other member to the group.");
-        return;
-      }
-      setGroups([
-        ...groups,
-        {
-          id: uuidv4(),
-          name: groupName.trim(),
-          members,
-          timestamp: new Date().toISOString(),
-        },
-      ]);
-      setGroupName("");
-      setMemberNames([""]);
-      onClose();
-    }
-  };
+ const handleAddGroup = () => {
+   if (groupName.trim() !== "") {
+     if (groups.some((group) => group.name === groupName.trim())) {
+       alert(
+         "A group with this name already exists. Please choose a different name."
+       );
+       return;
+     }
+     const members = [
+       username[0],
+       ...memberNames.filter((name) => name.trim() !== ""),
+     ];
+     if (members.length < 2) {
+       alert("Please add at least 1 other member to the group.");
+       return;
+     }
+
+     // Initialize memberBalances
+     const memberBalances = {};
+     members.forEach((member) => {
+       memberBalances[member] = {};
+       members.forEach((otherMember) => {
+         if (member !== otherMember) {
+           memberBalances[member][otherMember] = 0;
+         }
+       });
+     });
+     console.log('memberBalances :>> ', memberBalances);
+
+     setGroups([
+       ...groups,
+       {
+         id: uuidv4(),
+         name: groupName.trim(),
+         memberBalances, // Use the initialized memberBalances here
+         members,
+         timestamp: new Date().toISOString(),
+       },
+     ]);
+     setGroupName("");
+     setMemberNames([""]);
+     onClose();
+   }
+ };
 
   const handleAddMemberField = () => {
     if (memberNames.length < 9) {

@@ -34,7 +34,12 @@ export const ExpenseProvider = ({ children }) => {
         const userData = userDoc.data();
         setPersonalExpenses(userData.personalExpenses || []);
         setGroupExpenses(userData.groupExpenses || []);
-        setGroups(userData.groups || []);
+        setGroups(
+          userData.groups.map((group) => ({
+            ...group,
+            memberBalances: group.memberBalances || {},
+          })) || []
+        );
         setUsername([userData.firstName, userData.lastName || ""]);
       }
       setIsLoading(false);
@@ -65,21 +70,58 @@ export const ExpenseProvider = ({ children }) => {
     updateFirestore();
   }, [userId, personalExpenses, groupExpenses, groups, isLoading]);
 
-const addPersonalExpense = useCallback((expense) => {
-  const expenseWithTimestamp = {
-    ...expense,
-    timestamp: new Date().toISOString(),
-  };
-  setPersonalExpenses((prev) => [...prev, expenseWithTimestamp]);
-}, []);
+  const addPersonalExpense = useCallback((expense) => {
+    const expenseWithTimestamp = {
+      ...expense,
+      timestamp: new Date().toISOString(),
+    };
+    setPersonalExpenses((prev) => [...prev, expenseWithTimestamp]);
+  }, []);
 
-const addGroupExpense = useCallback((expense) => {
-  const expenseWithTimestamp = {
-    ...expense,
-    timestamp: new Date().toISOString(),
+  const addGroupExpense = useCallback((expense) => {
+    const expenseWithTimestamp = {
+      ...expense,
+      timestamp: new Date().toISOString(),
+    };
+
+    setGroupExpenses((prev) => [...prev, expenseWithTimestamp]);
+
+    setGroups((prevGroups) => {
+      return prevGroups.map((group) => {
+        if (group.name === expense.group) {
+          const updatedMemberBalances = calculateMemberBalances(
+            group,
+            expenseWithTimestamp
+          );
+          return { ...group, memberBalances: updatedMemberBalances };
+        }
+        return group;
+      });
+    });
+  }, []);
+
+  const calculateMemberBalances = (group, newExpense) => {
+    let memberBalances = JSON.parse(JSON.stringify(group.memberBalances || {}));
+    const members = group.members || [];
+    const { splitMethod, value, payer } = newExpense;
+
+    if (splitMethod === "equal" && payer !== "everyone") {
+      const share = value / members.length;
+      members.forEach((member) => {
+        if (member !== payer) {
+          if (!memberBalances[member]) memberBalances[member] = {};
+          if (!memberBalances[payer]) memberBalances[payer] = {};
+
+          memberBalances[member][payer] =
+            (memberBalances[member][payer] || 0) + share;
+          memberBalances[payer][member] =
+            (memberBalances[payer][member] || 0) - share;
+        }
+      });
+    }
+
+    return memberBalances;
   };
-  setGroupExpenses((prev) => [...prev, expenseWithTimestamp]);
-}, []);
 
   const updatePersonalExpense = useCallback((updatedExpense) => {
     setPersonalExpenses((prev) =>
@@ -89,68 +131,66 @@ const addGroupExpense = useCallback((expense) => {
     );
   }, []);
 
-const updateGroupExpense = useCallback((newExpense) => {
-  setGroupExpenses((prev) => {
-    const index = prev.findIndex((expense) => expense.id === newExpense.id);
-    if (index !== -1) {
-      // Update existing expense
-      return prev.map((expense) =>
-        expense.id === newExpense.id ? newExpense : expense
-      );
-    } else {
-      // Add new expense
-      return [...prev, newExpense];
-    }
-  });
+  const updateGroupExpense = useCallback((updatedExpense) => {
+    setGroupExpenses((prev) =>
+      prev.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
+    );
 
-  // Recalculate balances
-  setGroups((prevGroups) => {
-    return prevGroups.map((group) => {
-      if (group.name === newExpense.group) {
-        const updatedBalances = { ...group.balances };
-
-        newExpense.splitAmong.forEach((member) => {
-          const memberShare =
-            newExpense.splitMethod === "equal"
-              ? newExpense.value / newExpense.splitAmong.length
-              : newExpense.splitAmounts[member] || 0;
-
-          if (member !== newExpense.payer) {
-            updatedBalances[member] =
-              (updatedBalances[member] || 0) - memberShare;
-            updatedBalances[newExpense.payer] =
-              (updatedBalances[newExpense.payer] || 0) + memberShare;
-          }
-        });
-
-        return { ...group, balances: updatedBalances };
-      }
-      return group;
+    // Recalculate memberBalances
+    setGroups((prevGroups) => {
+      return prevGroups.map((group) => {
+        if (group.name === updatedExpense.group) {
+          const updatedMemberBalances = calculateMemberBalances(
+            group,
+            updatedExpense
+          );
+          return { ...group, memberBalances: updatedMemberBalances };
+        }
+        return group;
+      });
     });
-  });
-}, []);
+  }, []);
+
+  const deleteGroupExpense = useCallback((id) => {
+    setGroupExpenses((prev) => {
+      const expenseToDelete = prev.find((expense) => expense.id === id);
+      if (expenseToDelete) {
+        setGroups((prevGroups) => {
+          return prevGroups.map((group) => {
+            if (group.name === expenseToDelete.group) {
+              const updatedMemberBalances = calculateMemberBalances(group, {
+                ...expenseToDelete,
+                value: -expenseToDelete.value, // Negate the value to reverse the expense
+              });
+              return { ...group, memberBalances: updatedMemberBalances };
+            }
+            return group;
+          });
+        });
+      }
+      return prev.filter((expense) => expense.id !== id);
+    });
+  }, []);
 
   const deletePersonalExpense = useCallback((id) => {
     setPersonalExpenses((prev) => prev.filter((expense) => expense.id !== id));
   }, []);
 
-  const deleteGroupExpense = useCallback((id) => {
-    setGroupExpenses((prev) => prev.filter((expense) => expense.id !== id));
+  const addMemberToGroup = useCallback((groupName, member) => {
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.name === groupName
+          ? {
+              ...group,
+              members: [...group.members, member],
+              timestamp: new Date().toISOString(),
+            }
+          : group
+      )
+    );
   }, []);
-
-const addMemberToGroup = useCallback((groupName, member) => {
-  setGroups((prev) =>
-    prev.map((group) =>
-      group.name === groupName
-        ? {
-            ...group,
-            members: [...group.members, member],
-            timestamp: new Date().toISOString(),
-          }
-        : group
-    )
-  );
-}, []);
 
   const contextValue = {
     personalExpenses,

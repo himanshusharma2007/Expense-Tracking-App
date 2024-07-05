@@ -1,14 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
-import { BiX, BiPlus } from "react-icons/bi";
+import { BiPlus, BiX } from "react-icons/bi";
 import { FaHandshakeSimple } from "react-icons/fa6";
 import SettleUpModal from "../Modals/SettleUpModal";
 
 const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   const [newMember, setNewMember] = useState("");
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,7 +21,7 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center ">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
       <div className="bg-white p-5 rounded-lg shadow-lg w-96">
         <h3 className="text-lg font-semibold mb-4">Add New Member</h3>
         <form onSubmit={handleSubmit}>
@@ -54,41 +53,79 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   );
 };
 
+const MemberDetailsModal = ({ isOpen, onClose, member, group }) => {
+  if (!isOpen || !member) return null;
+
+  const memberBalances = group.memberBalances?.[member] || {};
+
+  const owesToOthers = Object.entries(memberBalances).filter(
+    ([_, balance]) => balance > 0
+  );
+  const othersOwe = Object.entries(memberBalances).filter(
+    ([_, balance]) => balance < 0
+  );
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
+      <div className="relative bg-white rounded-lg p-8 m-4 max-w-xl w-full">
+        <h2 className="text-2xl font-bold mb-4">{member}'s balance</h2>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold mb-2">
+            {member} owes to members
+          </h3>
+          {owesToOthers.length > 0 ? (
+            <ul>
+              {owesToOthers.map(([otherMember, balance]) => (
+                <li key={otherMember} className="mb-1">
+                  {member} owes {balance.toFixed(2)} to {otherMember}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 italic">
+              {member} doesn't owe money to anyone.
+            </p>
+          )}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-2">
+            Members who owe to {member}
+          </h3>
+          {othersOwe.length > 0 ? (
+            <ul>
+              {othersOwe.map(([otherMember, balance]) => (
+                <li key={otherMember} className="mb-1">
+                  {otherMember} owes {Math.abs(balance).toFixed(2)} to {member}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 italic">
+              No one owes money to {member}.
+            </p>
+          )}
+        </div>
+        <button
+          onClick={onClose}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const Group = () => {
   const { groupName } = useParams();
-  const { groups, setGroups, groupExpenses, username } = useExpenses();
+  const { groups, setGroups, username } = useExpenses();
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isSettleUpModalOpen, setIsSettleUpModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
   const decodedGroupName = decodeURIComponent(groupName);
   const group = groups.find((g) => g.name === decodedGroupName);
 
-  // Use useMemo to recalculate group data when groups or groupExpenses change
-  const groupData = useMemo(() => {
-    const group = groups.find((g) => g.name === decodedGroupName);
-    if (!group) return null;
-
-    // Recalculate balances based on groupExpenses
-    const balances = {};
-    groupExpenses.forEach((expense) => {
-      if (expense.group === decodedGroupName) {
-        expense.splitAmong.forEach((member) => {
-          const share =
-            expense.splitMethod === "equal"
-              ? expense.value / expense.splitAmong.length
-              : expense.splitAmounts[member] || 0;
-
-          if (member !== expense.payer) {
-            balances[member] = (balances[member] || 0) - share;
-            balances[expense.payer] = (balances[expense.payer] || 0) + share;
-          }
-        });
-      }
-    });
-
-    return { ...group, balances };
-  }, [groups, groupExpenses, decodedGroupName]);
-
-  if (!groupData) {
+  if (!group) {
     return (
       <Layout title="Group Not Found">
         <div className="text-center text-red-500">
@@ -97,19 +134,6 @@ const Group = () => {
       </Layout>
     );
   }
-
-  const removeMember = (memberToRemove) => {
-    const updatedGroups = groups.map((g) => {
-      if (g.name === group.name && g.members.length > 2) {
-        return {
-          ...g,
-          members: g.members.filter((member) => member !== memberToRemove),
-        };
-      }
-      return g;
-    });
-    setGroups(updatedGroups);
-  };
 
   const addMember = (newMember) => {
     const updatedGroups = groups.map((g) => {
@@ -124,14 +148,31 @@ const Group = () => {
     setGroups(updatedGroups);
   };
 
-  // Group.jsx
-  const calculateOwedMoney = (member) => {
-    const groupBalance = groupData.balances && groupData.balances[member];
-    return groupBalance ? -groupBalance : 0;
+  const removeMember = (memberToRemove) => {
+    if (group.members.length <= 2) {
+      alert("A group must have at least two members.");
+      return;
+    }
+    const updatedGroups = groups.map((g) => {
+      if (g.name === group.name) {
+        return {
+          ...g,
+          members: g.members.filter((member) => member !== memberToRemove),
+          memberBalances: Object.fromEntries(
+            Object.entries(g.memberBalances || {}).filter(
+              ([member]) => member !== memberToRemove
+            )
+          ),
+        };
+      }
+      return g;
+    });
+    setGroups(updatedGroups);
   };
+
   return (
     <Layout title={`Group: ${group.name}`}>
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6  mx-2">
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6 mx-2">
         <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             {group.name}
@@ -160,26 +201,19 @@ const Group = () => {
                 className="px-4 py-4 w-full sm:px-6 flex justify-between items-center"
               >
                 <div>{member}</div>
-                <div className="flex items-center">
-                  {member !== username[0] && (
-                    <span className="mr-4 text-sm text-gray-500">
-                      {calculateOwedMoney(member) > 0
-                        ? `${member} owes you ₹${calculateOwedMoney(
-                            member
-                          ).toFixed(2)}`
-                        : calculateOwedMoney(member) < 0
-                        ? `You owe ${member} ₹${Math.abs(
-                            calculateOwedMoney(member)
-                          ).toFixed(2)}`
-                        : `You're settled with ${member}`}
-                    </span>
-                  )}
-                  {group.members.length > 2 && member !== username[0] && (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setSelectedMember(member)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    View Details
+                  </button>
+                  {member !== username[0] && group.members.length > 2 && (
                     <button
                       onClick={() => removeMember(member)}
                       className="text-red-500 hover:text-red-700"
                     >
-                      <BiX size={25} />
+                      <BiX size={20} />
                     </button>
                   )}
                 </div>
@@ -190,13 +224,19 @@ const Group = () => {
       </div>
       <AddMemberModal
         isOpen={isAddMemberModalOpen}
-        onClose={() => setisAddMemberModalOpen(false)}
+        onClose={() => setIsAddMemberModalOpen(false)}
         onAdd={addMember}
       />
       <SettleUpModal
         isOpen={isSettleUpModalOpen}
         onClose={() => setIsSettleUpModalOpen(false)}
         groupName={decodedGroupName}
+      />
+      <MemberDetailsModal
+        isOpen={!!selectedMember}
+        onClose={() => setSelectedMember(null)}
+        member={selectedMember}
+        group={group}
       />
     </Layout>
   );

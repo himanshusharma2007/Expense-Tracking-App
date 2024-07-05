@@ -36,64 +36,64 @@ const AddExpenseModal = ({
     }
   }, [expenseType, splitMethod, selectedGroup, groups]);
 
- const validateForm = () => {
-   const newErrors = {};
-   if (!title.trim()) newErrors.title = "Title is required";
-   if (!date) newErrors.date = "Date is required";
-   if (!amount || amount <= 0) newErrors.amount = "Valid amount is required";
-   if (expenseType === "group" && !payer) newErrors.payer = "Payer is required";
- 
-  if (expenseType === "group" && splitMethod === "custom") {
-    const totalSplit = Object.values(customSplits).reduce(
-      (sum, value) => sum + parseFloat(value || 0),
-      0
-    );
-    if (Math.abs(totalSplit - parseFloat(amount)) > 0.01) {
-      newErrors.customSplits =
-        "The sum of custom splits must equal the total amount";
+  const validateForm = () => {
+    const newErrors = {};
+    if (!title.trim()) newErrors.title = "Title is required";
+    if (!date) newErrors.date = "Date is required";
+    if (!amount || amount <= 0) newErrors.amount = "Valid amount is required";
+    if (expenseType === "group" && !payer)
+      newErrors.payer = "Payer is required";
+
+    if (expenseType === "group" && splitMethod === "custom") {
+      const totalSplit = Object.values(customSplits).reduce(
+        (sum, value) => sum + parseFloat(value || 0),
+        0
+      );
+      if (Math.abs(totalSplit - parseFloat(amount)) > 0.01) {
+        newErrors.customSplits =
+          "The sum of custom splits must equal the total amount";
+      }
     }
-  }
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
- };
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
- const handleSubmit = (e) => {
-   e.preventDefault();
-   const formErrors = validateForm();
-   if (Object.keys(formErrors).length > 0) return;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-   const newExpense = {
-     id: uuidv4(),
-     title: title,
-     desc: description,
-     value: parseFloat(amount),
-     date: date,
-     type: expenseType,
-     group: expenseType === "group" ? selectedGroup : null,
-     payer: payer === "everyone" ? "everyone" : payer,
-     splitMethod: splitMethod,
-     expenseCategory: expenseType === "personal" ? expenseCategory : null,
-     splitAmong:
-       expenseType === "group"
-         ? splitMethod === "equal"
-           ? groups.find((g) => g.name === selectedGroup)?.members
-           : splitAmong
-         : null,
-     splitAmounts: splitMethod === "custom" ? customSplits : {},
-   };
+    const newExpense = {
+      id: uuidv4(),
+      title,
+      desc: description,
+      value: parseFloat(amount),
+      date,
+      type: expenseType,
+      group: expenseType === "group" ? selectedGroup : null,
+      payer: payer === "everyone" ? "everyone" : payer,
+      splitMethod,
+      splitAmong:
+        expenseType === "group"
+          ? splitMethod === "equal"
+            ? groups.find((g) => g.name === selectedGroup)?.members
+            : splitAmong
+          : null,
+      splitAmounts: splitMethod === "custom" ? customSplits : {},
+    };
 
-   if (expenseType === "personal") {
-     addPersonalExpense(newExpense);
-   } else {
-     addGroupExpense(newExpense);
-   }
+    if (expenseType === "personal") {
+      addPersonalExpense(newExpense);
+    } else {
+      addGroupExpense(newExpense);
+    }
 
-   onClose();
- };
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-auto w-full z-50 flex justify-center items-center">
-      <div className="relative bg-white rounded-lg p-4 md:p-8 m-4 max-w-4xl w-full">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50  h-auto w-full z-50 flex justify-center items-center">
+      <div className="relative bg-white rounded-lg p-4 md:p-8 m-4 max-w-4xl w-full overflow-y-auto  max-h-[80vh]">
         <h2 className="text-2xl font-bold mb-6">Add Expense Details</h2>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -182,7 +182,6 @@ const AddExpenseModal = ({
                       errors.payer ? "border-red-500" : ""
                     }`}
                   >
-                   
                     <option value="everyone">Everyone</option>
                     {groups
                       .find((g) => g.name === selectedGroup)
