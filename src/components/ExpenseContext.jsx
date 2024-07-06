@@ -19,11 +19,22 @@ export const ExpenseProvider = ({ children }) => {
   const [username, setUsername] = useState(["", ""]);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("trackexUserId");
-    if (storedUserId) {
-      console.log("id is get from the localStorage", storedUserId);
-      setUserId(storedUserId);
-    }
+    const fatchUserData = async () => {
+      const storedUserId = localStorage.getItem("trackexUserId");
+      if (storedUserId) {
+        console.log("id is get from the localStorage", storedUserId);
+        const userDocRef = doc(db, "users", storedUserId);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+
+          console.log("userData.firstName", userData.firstName);
+          setUsername([userData.firstName, userData.lastName || ""]);
+          setUserId(storedUserId);
+        }
+      }
+    };
+    fatchUserData();
   }, []);
 
   const loadUserData = useCallback(async () => {
@@ -40,6 +51,7 @@ export const ExpenseProvider = ({ children }) => {
             memberBalances: group.memberBalances || {},
           })) || []
         );
+        console.log("userData.firstName", userData.firstName);
         setUsername([userData.firstName, userData.lastName || ""]);
       }
       setIsLoading(false);
