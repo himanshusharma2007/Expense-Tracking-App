@@ -230,7 +230,8 @@ const Group = () => {
         </div>
       </div>
       <div className="mt-8">
-        <GroupExpensesTable gheading thisGroupExpenses={thisGroupExpenses} />
+        <h1 className="text-lg font-semibold mb-2">Expenses In This Group</h1>
+        <GroupExpensesTable thisGroupExpenses={thisGroupExpenses} />
       </div>
       <AddMemberModal
         isOpen={isAddMemberModalOpen}

@@ -314,6 +314,9 @@ const Dashboard = () => {
                 </p>
               </div>
               <div>
+                  <p className="text-xs md:text-sm text-gray-600">
+                 You Owe to People 
+                </p>
                 <p
                   className="text-xl md:text-2xl font-bold text-orange-600 cursor-pointer"
                   onClick={() => openModal({ type: "youOwe" })}
