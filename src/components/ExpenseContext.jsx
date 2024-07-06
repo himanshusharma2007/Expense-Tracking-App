@@ -39,6 +39,7 @@ export const ExpenseProvider = ({ children }) => {
 
   const loadUserData = useCallback(async () => {
     if (userId) {
+      setIsLoading(true); // Set loading to true at the start
       const userDocRef = doc(db, "users", userId);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
@@ -51,10 +52,9 @@ export const ExpenseProvider = ({ children }) => {
             memberBalances: group.memberBalances || {},
           })) || []
         );
-        console.log("userData.firstName", userData.firstName);
         setUsername([userData.firstName, userData.lastName || ""]);
       }
-      setIsLoading(false);
+      setIsLoading(false); // Set loading to false after all data is loaded
     }
   }, [userId]);
 
@@ -62,25 +62,28 @@ export const ExpenseProvider = ({ children }) => {
     loadUserData();
   }, [loadUserData]);
 
-  useEffect(() => {
-    const updateFirestore = async () => {
-      if (userId && !isLoading) {
-        const userDocRef = doc(db, "users", userId);
-        await setDoc(
-          userDocRef,
-          {
-            personalExpenses,
-            groupExpenses,
-            groups,
-          },
-          { merge: true }
-        );
-        console.log("Data updated in Firestore");
-      }
-    };
+useEffect(() => {
+  const updateFirestore = async () => {
+    if (userId && !isLoading) {
+      const userDocRef = doc(db, "users", userId);
+      await setDoc(
+        userDocRef,
+        {
+          personalExpenses,
+          groupExpenses,
+          groups,
+        },
+        { merge: true }
+      );
+      console.log("Data updated in Firestore");
+    }
+  };
 
+  if (!isLoading) {
+    // Only update Firestore when data is loaded
     updateFirestore();
-  }, [userId, personalExpenses, groupExpenses, groups, isLoading]);
+  }
+}, [userId, personalExpenses, groupExpenses, groups, isLoading]);
 
   const addPersonalExpense = useCallback((expense) => {
     const expenseWithTimestamp = {
@@ -212,6 +215,7 @@ export const ExpenseProvider = ({ children }) => {
     username,
     setGroups,
     addPersonalExpense,
+    setGroupExpenses,
     addGroupExpense,
     updatePersonalExpense,
     updateGroupExpense,

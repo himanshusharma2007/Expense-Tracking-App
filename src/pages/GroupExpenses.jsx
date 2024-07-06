@@ -4,7 +4,7 @@ import { useExpenses } from "../components/ExpenseContext";
 import Layout from "../components/Layout";
 
 const GroupExpenses = () => {
-  const { GroupExpenses, groupExpenses } = useExpenses();
+  const { groupExpenses } = useExpenses();
 
   if (groupExpenses.length === 0) {
     return (

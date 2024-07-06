@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
 import { BiPlus, BiX } from "react-icons/bi";
 import { FaHandshakeSimple } from "react-icons/fa6";
 import SettleUpModal from "../Modals/SettleUpModal";
+import GroupExpensesTable from "../components/GxTable";
 
 const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
   const [newMember, setNewMember] = useState("");
@@ -118,13 +119,19 @@ const MemberDetailsModal = ({ isOpen, onClose, member, group }) => {
 
 const Group = () => {
   const { groupName } = useParams();
-  const { groups, setGroups, username } = useExpenses();
+  const { groups, setGroups, username, groupExpenses } = useExpenses();
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isSettleUpModalOpen, setIsSettleUpModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
   const decodedGroupName = decodeURIComponent(groupName);
   const group = groups.find((g) => g.name === decodedGroupName);
-
+  const [thisGroupExpenses, setThisGroupExpenses] = useState([]);
+  useEffect(() => {
+    const expenses = groupExpenses.filter(
+      (expense) => expense.group === groupName
+    );
+    setThisGroupExpenses(expenses);
+  }, [groupName, groupExpenses]); 
   if (!group) {
     return (
       <Layout title="Group Not Found">
@@ -221,6 +228,9 @@ const Group = () => {
             ))}
           </ul>
         </div>
+      </div>
+      <div className="mt-8">
+        <GroupExpensesTable gheading thisGroupExpenses={thisGroupExpenses} />
       </div>
       <AddMemberModal
         isOpen={isAddMemberModalOpen}

@@ -2,6 +2,7 @@ import React from "react";
 import { FaEdit } from "react-icons/fa";
 import formatTimestamp from "../utils/dateFormatters";
 import { FaTrashCan } from "react-icons/fa6";
+import { th } from "date-fns/locale";
 
 const ExpenseDetailsModal = ({
   isOpen,
@@ -39,9 +40,37 @@ const ExpenseDetailsModal = ({
             <strong>Amount:</strong> ₹{expense.value}
           </p>
           {isGroupExpense && (
-            <p>
-              <strong>Group:</strong> {expense.group}
-            </p>
+            <>
+              <p>
+                <strong>Group:</strong> {expense.group}
+              </p>
+              <p>
+                <strong>Split Method:</strong> {expense.splitMethod}
+              </p>
+              {expense.splitMethod == "custom" && (
+                <div>
+                  <strong>Split Among:</strong>
+                  <table className="">
+                    <thead>
+                      <tr>
+                        {expense.splitAmong.map((member, index) => (
+                          <th className="font-medium m-3 px-3" key={index}>{member} </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        {Object.values(expense.splitAmounts).map(
+                          (amount, index) => (
+                            <td className="mr-3 px-3" key={index}>₹{amount}</td>
+                          )
+                        )}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </div>
         <div className="flex justify-end p-4 border-t">

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useExpenses } from "../components/ExpenseContext";
 import { v4 as uuidv4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 const NewGroupModal = ({ onClose }) => {
   const { setGroups, groups, username } = useExpenses();
   const [groupName, setGroupName] = useState("");
   const [memberNames, setMemberNames] = useState([""]); // Start with one empty field for additional members
-
+ const navigate =useNavigate()
  const handleAddGroup = () => {
    if (groupName.trim() !== "") {
      if (groups.some((group) => group.name === groupName.trim())) {
@@ -48,6 +49,7 @@ const NewGroupModal = ({ onClose }) => {
      setGroupName("");
      setMemberNames([""]);
      onClose();
+     navigate(`/group/${groupName}`)
    }
  };
 

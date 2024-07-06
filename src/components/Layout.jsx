@@ -37,7 +37,6 @@ const Layout = ({ children, title }) => {
   const [initialGroup, setInitialGroup] = useState("");
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [isGroupsOpen, setIsGroupsOpen] = useState(false);
-  const { groups, setGroups } = useExpenses();
   const [editingGroupId, setEditingGroupId] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
   const { username } = useExpenses();
@@ -45,6 +44,7 @@ const Layout = ({ children, title }) => {
   let firstName = username[0];
   const userModalRef = useRef(null);
   const navigate = useNavigate();
+  const { groups, setGroups, setGroupExpenses, groupExpenses } = useExpenses();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -113,6 +113,14 @@ const Layout = ({ children, title }) => {
     if (window.confirm("Are you sure you want to delete this group?")) {
       const updatedGroups = groups.filter((group) => group.id !== groupId);
       setGroups(updatedGroups);
+      const group = groups.find((group) => group.id === groupId);
+
+      setGroups(updatedGroups);
+      const updatedGroupExpense = groupExpenses.filter(
+        (expense) => expense.group !== group.name
+      );
+      setGroupExpenses(updatedGroupExpense || groupExpenses);
+      
     }
   };
 
