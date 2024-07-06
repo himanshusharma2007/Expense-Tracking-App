@@ -97,19 +97,20 @@ export const ExpenseProvider = ({ children }) => {
     };
 
     setGroupExpenses((prev) => [...prev, expenseWithTimestamp]);
-
-    setGroups((prevGroups) => {
-      return prevGroups.map((group) => {
-        if (group.name === expense.group) {
-          const updatedMemberBalances = calculateMemberBalances(
-            group,
-            expenseWithTimestamp
-          );
-          return { ...group, memberBalances: updatedMemberBalances };
-        }
-        return group;
+    if (expense.splitMethod == "equal") {
+      setGroups((prevGroups) => {
+        return prevGroups.map((group) => {
+          if (group.name === expense.group) {
+            const updatedMemberBalances = calculateMemberBalances(
+              group,
+              expenseWithTimestamp
+            );
+            return { ...group, memberBalances: updatedMemberBalances };
+          }
+          return group;
+        });
       });
-    });
+    }
   }, []);
 
   const calculateMemberBalances = (group, newExpense) => {

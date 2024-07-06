@@ -88,19 +88,19 @@ const Dashboard = () => {
       0
     );
 
-  const youOweFromPeople = groupExpenses.reduce((sum, expense) => {
-    if (expense.payer !== (username[0] || "") && expense.payer !== "everyone") {
-      const yourShare =
-        expense.splitMethod === "equal"
-          ? expense.value / (expense.splitAmong?.length || 1)
-          : (expense.splitAmounts &&
-              username[0] &&
-              expense.splitAmounts[username[0]]) ||
-            0;
-      return sum + yourShare;
-    }
-    return sum;
-  }, 0);
+ const youOweFromPeople = groupExpenses.reduce((sum, expense) => {
+   if (expense.payer !== (username[0] || "") && expense.payer !== "everyone") {
+     const yourShare =
+       expense.splitMethod === "equal"
+         ? expense.value / (expense.splitAmong?.length || 1)
+         : (expense.splitAmounts &&
+             username[0] &&
+             parseFloat(expense.splitAmounts[username[0]])) ||
+           0;
+     return sum + (isNaN(yourShare) ? 0 : yourShare);
+   }
+   return sum;
+ }, 0);
 
     const peopleOweYou = groupExpenses.reduce((sum, expense) => {
       if (expense.payer === username[0]) {
@@ -314,14 +314,14 @@ const Dashboard = () => {
                 </p>
               </div>
               <div>
-                <p className="text-xs md:text-sm text-gray-600">
-                  You Owe From People
-                </p>
                 <p
                   className="text-xl md:text-2xl font-bold text-orange-600 cursor-pointer"
                   onClick={() => openModal({ type: "youOwe" })}
                 >
-                  ₹{dashboardData.youOweFromPeople.toFixed(2)}
+                  ₹
+                  {typeof dashboardData.youOweFromPeople === "number"
+                    ? dashboardData.youOweFromPeople.toFixed(2)
+                    : "0.00"}
                 </p>
               </div>
               <div>
