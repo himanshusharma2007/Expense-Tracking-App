@@ -11,7 +11,7 @@ const LandingPage = () => {
       if (userId) {
         const userData = await getUserData(userId);
         if (userData) {
-          navigate("/dashboard");
+          // navigate("/dashboard");
         }
       }
     };
@@ -46,9 +46,9 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="right w-full md:w-[40%] lg:w-[50%]  flex justify-center items-center md:justify-end md:items-end pb-4">
-          <div className="phone relative w-[80%] sm:w-[60%] md:w-[90%] lg:w-[50%] h-[80vh] sm:h-[82vh] bg-zinc-800 flex justify-center py-3 px-3 rounded-2xl">
+          <div className="iphone-mockup relative w-[80%] sm:w-[60%] md:w-[90%] lg:w-[50%] h-[80vh] sm:h-[85vh] bg-zinc-800 flex justify-center py-3 px-3 rounded-2xl">
             <div className="relative w-full h-full bg-white flex justify-center rounded-2xl">
-              <div className="absolute top-0 bg-zinc-800 w-[45%] h-8 rounded-bl-2xl rounded-br-2xl"></div>
+              <div className="absolute top-2 bg-zinc-800 w-[34%] h-[26px] rounded-full"></div>
               {[
                 {
                   title: "Easy to Use",
@@ -68,10 +68,11 @@ const LandingPage = () => {
               ].map((feature, index) => (
                 <div
                   key={index}
-                  className="absolute-center bg-zinc-800 text-white p-4 rounded-lg w-[90%] h-[80%] mt-4 md:mt-6"
+                  className="phone-card first-letter:absolute-center bg-zinc-800 text-white p-4 rounded-lg w-[90%] h-[80%] mt-4 md:mt-6"
                 >
                   <h3 className="font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-sm">{feature.description}</p>
+                  <p className="text-sm">{feature.
+                  description}</p>
                 </div>
               ))}
             </div>
