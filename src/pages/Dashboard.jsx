@@ -7,6 +7,7 @@ import { IoAnalytics } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
 import formatTimestamp from "../utils/dateFormatters";
 import ExpenseTable from "../components/ExpenseTable";
+import BudgetTracker from "../components/BudgetTracker";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -247,6 +248,7 @@ const Dashboard = () => {
 
   return (
     <Layout title="Dashboard">
+      <BudgetTracker />
       <div className="px-3 md:p-6 bg-gray-100 rounded-lg md:shadow-lg">
         <h1 className="flex items-center space-x-3 text-2xl md:text-3xl font-semibold mb-6 text-gray-800">
           <IoAnalytics className="text-[24px] md:text-[30px]" />

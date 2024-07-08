@@ -13,6 +13,7 @@ const ExpenseContext = createContext();
 export const ExpenseProvider = ({ children }) => {
   const [personalExpenses, setPersonalExpenses] = useState([]);
   const [groupExpenses, setGroupExpenses] = useState([]);
+  const [monthlyBudget, setMonthlyBudget] = useState(0);
   const [groups, setGroups] = useState([]);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,26 +38,38 @@ export const ExpenseProvider = ({ children }) => {
     fatchUserData();
   }, []);
 
-  const loadUserData = useCallback(async () => {
-    if (userId) {
-      setIsLoading(true); // Set loading to true at the start
-      const userDocRef = doc(db, "users", userId);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setPersonalExpenses(userData.personalExpenses || []);
-        setGroupExpenses(userData.groupExpenses || []);
-        setGroups(
-          userData.groups.map((group) => ({
-            ...group,
-            memberBalances: group.memberBalances || {},
-          })) || []
-        );
-        setUsername([userData.firstName, userData.lastName || ""]);
-      }
-      setIsLoading(false); // Set loading to false after all data is loaded
+const loadUserData = useCallback(async () => {
+  if (userId) {
+    setIsLoading(true);
+    const userDocRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      setMonthlyBudget(userData.monthlyBudget || 0);
+      setPersonalExpenses(userData.personalExpenses || []);
+      setGroupExpenses(userData.groupExpenses || []);
+      setGroups(
+        (userData.groups || []).map((group) => ({
+          ...group,
+          memberBalances: group.memberBalances || {},
+        }))
+      );
+      setUsername([userData.firstName || "", userData.lastName || ""]);
+    } else {
+      // Handle case where user document doesn't exist
+      console.log("User document does not exist. Creating new document.");
+      await setDoc(userDocRef, {
+        monthlyBudget: 0,
+        personalExpenses: [],
+        groupExpenses: [],
+        groups: [],
+        firstName: "",
+        lastName: "",
+      });
     }
-  }, [userId]);
+    setIsLoading(false);
+  }
+}, [userId]);
 
   useEffect(() => {
     loadUserData();
@@ -66,24 +79,28 @@ useEffect(() => {
   const updateFirestore = async () => {
     if (userId && !isLoading) {
       const userDocRef = doc(db, "users", userId);
-      await setDoc(
-        userDocRef,
-        {
-          personalExpenses,
-          groupExpenses,
-          groups,
-        },
-        { merge: true }
-      );
-      console.log("Data updated in Firestore");
+      try {
+        await setDoc(
+          userDocRef,
+          {
+            monthlyBudget,
+            personalExpenses,
+            groupExpenses,
+            groups,
+          },
+          { merge: true }
+        );
+        console.log("Data updated in Firestore");
+      } catch (error) {
+        console.error("Error updating Firestore:", error);
+      }
     }
   };
 
   if (!isLoading) {
-    // Only update Firestore when data is loaded
     updateFirestore();
   }
-}, [userId, personalExpenses, groupExpenses, groups, isLoading]);
+}, [userId, personalExpenses, groupExpenses, groups, isLoading, monthlyBudget]);
 
   const addPersonalExpense = useCallback((expense) => {
     const expenseWithTimestamp = {
@@ -209,6 +226,8 @@ useEffect(() => {
   }, []);
 
   const contextValue = {
+    monthlyBudget,
+    setMonthlyBudget,
     personalExpenses,
     groupExpenses,
     groups,

@@ -20,7 +20,7 @@ const UserInfoPage = () => {
 
   return (
     <div className="min-h-screen pattern flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8 border-2 border-[#27AE60]">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-6 md:p-8 border-2 border-[#27AE60]">
         <h2 className="text-2xl font-bold text-[#2C3E50] mb-6 text-center">
           Welcome to TrackEx
         </h2>
