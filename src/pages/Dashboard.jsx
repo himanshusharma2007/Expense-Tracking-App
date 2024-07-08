@@ -365,9 +365,9 @@ const Dashboard = () => {
           <FaHistory className="text-[24px] md:text-[30px]" />
           <div>Latest Expenses</div>
         </h2>
-        <p>
+        <h1>
           <Empty />
-        </p>
+        </h1>
         <ExpenseTable
           title="Last Personal Expense"
           expense={dashboardData.lastPersonalExpense}

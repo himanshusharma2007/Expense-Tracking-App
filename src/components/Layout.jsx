@@ -144,7 +144,7 @@ const Layout = ({ children, title }) => {
         </div>
         <ul className="py-2">
           <li className="px-4 py-2 text-sm text-gray-700">
-            All of your data is locally stored in your browser
+            Your TrackEx account will be specific to your Browser.
           </li>
           <li className="px-4 py-2">
             <button
