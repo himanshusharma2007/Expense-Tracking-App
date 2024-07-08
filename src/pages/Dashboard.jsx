@@ -11,7 +11,7 @@ import BudgetTracker from "../components/BudgetTracker";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { username, personalExpenses, groupExpenses } = useExpenses();
+  const { username, personalExpenses, groupExpenses, groups } = useExpenses();
   const [modalContent, setModalContent] = useState(null);
 
   const Modal = ({ isOpen, onClose, title, children }) => {
@@ -88,35 +88,22 @@ const Dashboard = () => {
       (sum, expense) => sum + expense.value,
       0
     );
+    let youOweFromPeople = 0;
+    let peopleOweYou = 0;
 
- const youOweFromPeople = groupExpenses.reduce((sum, expense) => {
-   if (expense.payer !== (username[0] || "") && expense.payer !== "everyone") {
-     const yourShare =
-       expense.splitMethod === "equal"
-         ? expense.value / (expense.splitAmong?.length || 1)
-         : (expense.splitAmounts &&
-             username[0] &&
-             parseFloat(expense.splitAmounts[username[0]])) ||
-           0;
-     return sum + (isNaN(yourShare) ? 0 : yourShare);
-   }
-   return sum;
- }, 0);
-
-    const peopleOweYou = groupExpenses.reduce((sum, expense) => {
-      if (expense.payer === username[0]) {
-        const othersShare =
-          expense.splitMethod === "equal"
-            ? (expense.value * (expense.splitAmong.length - 1)) /
-              expense.splitAmong.length
-            : Object.values(expense.splitAmounts).reduce(
-                (total, amount) => total + amount,
-                0
-              ) - (expense.splitAmounts[username[0]] || 0);
-        return sum + othersShare;
+    groups.forEach((group) => {
+      if (group.memberBalances && group.memberBalances[username[0]]) {
+        Object.entries(group.memberBalances[username[0]]).forEach(
+          ([member, balance]) => {
+            if (balance > 0) {
+              youOweFromPeople += Math.abs(balance);           
+            } else if (balance < 0) {
+             peopleOweYou += Math.abs(balance);
+            }
+          }
+        );
       }
-      return sum;
-    }, 0);
+    });
 
     // Get the last personal and group expenses
     const lastPersonalExpense =
@@ -137,9 +124,7 @@ const Dashboard = () => {
       lastPersonalExpense,
       lastGroupExpense,
     };
-  }, [personalExpenses, groupExpenses, username]);
-
-  
+  }, [personalExpenses, groupExpenses, username, groups]);
 
   const openModal = (content) => {
     setModalContent(content);
@@ -156,52 +141,41 @@ const Dashboard = () => {
       case "youOwe":
         return (
           <ul>
-            {groupExpenses.map((expense, index) => {
-              if (
-                expense.payer !== username[0] &&
-                expense.payer !== "everyone"
-              ) {
-                const yourShare =
-                  expense.splitMethod === "equal"
-                    ? expense.value / expense.splitAmong.length
-                    : expense.splitAmounts[username[0]] || 0;
-                return (
-                  <li key={index} className="mb-2 text-sm md:text-base">
-                    You owe {expense.payer} ₹{yourShare.toFixed(2)} for "
-                    {expense.title}"
-                  </li>
-                );
-              }
-              return null;
-            })}
+            {groups.flatMap((group) =>
+              group.memberBalances && group.memberBalances[username[0]]
+                ? Object.entries(group.memberBalances[username[0]])
+                    .filter(([member, balance]) => balance > 0)
+                    .map(([member, balance], index) => (
+                      <li
+                        key={`${group.name}-${index}`}
+                        className="mb-2 text-sm md:text-base"
+                      >
+                        You owe {member} ₹{Math.abs(balance).toFixed(2)} in
+                        group "{group.name}"
+                      </li>
+                    ))
+                : []
+            )}
           </ul>
         );
       case "peopleOweYou":
         return (
           <ul>
-            {groupExpenses.map((expense, index) => {
-              if (expense.payer === username[0]) {
-                return expense.splitAmong.map((member, memberIndex) => {
-                  if (member !== username[0]) {
-                    const theirShare =
-                      expense.splitMethod === "equal"
-                        ? expense.value / expense.splitAmong.length
-                        : expense.splitAmounts[member] || 0;
-                    return (
+            {groups.flatMap((group) =>
+              group.memberBalances && group.memberBalances[username[0]]
+                ? Object.entries(group.memberBalances[username[0]])
+                    .filter(([member, balance]) => balance < 0)
+                    .map(([member, balance], index) => (
                       <li
-                        key={`${index}-${memberIndex}`}
+                        key={`${group.name}-${index}`}
                         className="mb-2 text-sm md:text-base"
                       >
-                        {member} owes you ₹{theirShare.toFixed(2)} for "
-                        {expense.title}"
+                        {member} owes you ₹{Math.abs(balance.toFixed(2))} in group "
+                        {group.name}"
                       </li>
-                    );
-                  }
-                  return null;
-                });
-              }
-              return null;
-            })}
+                    ))
+                : []
+            )}
           </ul>
         );
       case "moneyBorrowed":

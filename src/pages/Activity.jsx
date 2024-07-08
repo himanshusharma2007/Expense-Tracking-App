@@ -1,7 +1,7 @@
 import React from "react";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
-import { FaMoneyBillWave, FaUsers } from "react-icons/fa";
+import { FaHandshake, FaMoneyBillWave, FaUsers } from "react-icons/fa";
 import formatTimestamp from "../utils/dateFormatters";
 const ActivityItem = ({ icon, content, timestamp, type }) => {
   const getColorClass = () => {
@@ -50,12 +50,15 @@ const Activity = () => {
     ...personalExpenses.map((e) => ({ ...e, type: "personal" })),
     ...groupExpenses.map((e) => ({ ...e, type: "group" })),
     ...groups.map((g) => ({ ...g, type: "group_creation" })),
+    ...groups.flatMap((g) =>
+      (g.activities || []).map((a) => ({ ...a, groupName: g.name }))
+    ),
   ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   return (
     <Layout title="Activity">
       <Empty />
-      <div className="max-w-3xl mx-4 md:mx-auto  shadow-lg rounded-lg overflow-hidden ">
+      <div className="max-w-3xl mx-4 md:mx-auto shadow-lg rounded-lg overflow-hidden">
         <div className="divide-y divide-gray-200">
           {allActivities.map((activity, index) => {
             let icon, content, type;
@@ -75,6 +78,11 @@ const Activity = () => {
                 content = `New group created: ${activity.name}`;
                 type = "group";
                 break;
+              case "settlement":
+                icon = <FaHandshake size={20} />;
+                content = `Settlement in ${activity.groupName}: ${activity.from} paid ${activity.to} ₹${activity.amount}`;
+                type = "group";
+                break;
               default:
                 icon = <FaMoneyBillWave size={20} />;
                 content = "Unknown activity";
@@ -85,7 +93,7 @@ const Activity = () => {
                 key={index}
                 icon={icon}
                 content={content}
-                timestamp={formatTimestamp(activity.timestamp , true)}
+                timestamp={formatTimestamp(activity.timestamp, true)}
                 type={type}
               />
             );

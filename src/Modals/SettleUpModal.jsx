@@ -102,7 +102,23 @@ const SettleUpModal = ({ isOpen, onClose, groupName }) => {
             }
           });
 
-          return { ...group, memberBalances: updatedBalances };
+          const settlementActivity = {
+            type: "settlement",
+            from: selectedSettlement.to,
+            to: selectedSettlement.from,
+            amount: Math.abs(settleAmount),
+            groupName: groupName,
+            timestamp: new Date().toISOString(),
+          };
+
+          // Add the settlement activity to the group's activities
+          const updatedGroup = {
+            ...group,
+            memberBalances: updatedBalances,
+            activities: [...(group.activities || []), settlementActivity],
+          };
+
+          return updatedGroup;
         }
         return group;
       })

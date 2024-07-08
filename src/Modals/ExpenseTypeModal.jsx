@@ -7,7 +7,17 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
   const [expenseType, setExpenseType] = useState("personal");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
+  const [error, setError] = useState("");
   const { groups } = useExpenses();
+
+  const handleContinue = () => {
+    if (expenseType === "group" && !selectedGroup) {
+      setError("Please select a group before continuing.");
+    } else {
+      setError("");
+      onContinue(expenseType, selectedGroup);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
@@ -24,7 +34,11 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200"
               }`}
-              onClick={() => setExpenseType("personal")}
+              onClick={() => {
+                setExpenseType("personal");
+                setSelectedGroup("");
+                setError("");
+              }}
             >
               Personal
             </button>
@@ -34,7 +48,11 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200"
               }`}
-              onClick={() => setExpenseType("group")}
+              onClick={() => {
+                setExpenseType("group");
+                setSelectedGroup("");
+                setError("");
+              }}
             >
               Group
             </button>
@@ -48,7 +66,10 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
             <div className="flex space-x-2">
               <select
                 value={selectedGroup}
-                onChange={(e) => setSelectedGroup(e.target.value)}
+                onChange={(e) => {
+                  setSelectedGroup(e.target.value);
+                  setError("");
+                }}
                 className="flex-grow p-2 border rounded"
               >
                 <option value="">Select a group</option>
@@ -66,6 +87,7 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
                 <span className="hidden md:block">New Group</span>
               </button>
             </div>
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </div>
         )}
         <div className="flex justify-end space-x-2 mt-6">
@@ -73,8 +95,8 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
             Cancel
           </button>
           <button
-            onClick={() => onContinue(expenseType, selectedGroup)}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            onClick={handleContinue}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             Continue
           </button>
