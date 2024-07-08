@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useExpenses } from "../components/ExpenseContext"; 
+import { useExpenses } from "../components/ExpenseContext";
 import NewGroupModal from "./GroupModal";
+import { BiPlus } from "react-icons/bi";
 
 const ExpenseTypeModal = ({ onContinue, onClose }) => {
   const [expenseType, setExpenseType] = useState("personal");
@@ -59,9 +60,10 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
               </select>
               <button
                 onClick={() => setIsNewGroupModalOpen(true)}
-                className="px-4 py-2 bg-green-500 text-white rounded"
+                className="px-4 py-2 bg-green-500 text-white rounded flex justify-center items-center"
               >
-                New Group
+                <BiPlus fontSize="25px" />{" "}
+                <span className="hidden md:block">New Group</span>
               </button>
             </div>
           </div>

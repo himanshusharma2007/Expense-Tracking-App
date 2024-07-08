@@ -4,7 +4,7 @@ import EditExpenseModal from "../Modals/EditExpenseModal";
 import ExpenseDetailsModal from "../Modals/ExpenseDetailsModal"; // New component
 import { FaEdit } from "react-icons/fa";
 import { FaTrashCan } from "react-icons/fa6";
-import formatTimestamp from '../utils/dateFormatters'
+import formatTimestamp from "../utils/dateFormatters";
 
 const PersonalExpensesTable = ({ pheading }) => {
   const { personalExpenses, deletePersonalExpense } = useExpenses();
@@ -96,7 +96,10 @@ const PersonalExpensesTable = ({ pheading }) => {
           isOpen={!!selectedExpense}
           onClose={() => setSelectedExpense(null)}
           expense={selectedExpense}
-          onEdit={() => setEditingExpense(selectedExpense)}
+          onEdit={() => {
+            setSelectedExpense(null);
+            setEditingExpense(selectedExpense);
+          }}
           onDelete={() => {
             deletePersonalExpense(selectedExpense.id);
             setSelectedExpense(null);

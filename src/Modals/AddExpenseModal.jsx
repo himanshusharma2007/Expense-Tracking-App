@@ -132,7 +132,7 @@ const handleSplitAmongChange = (member, isChecked) => {
                 Title
               </label>
               <input
-                type="text"
+                type="text" 
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full p-2 border rounded"

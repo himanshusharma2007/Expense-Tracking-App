@@ -184,19 +184,20 @@ const Group = () => {
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             {group.name}
           </h3>
-          <div className="btns flex items-center space-x-3">
+          <div className="btns flex flex-row-reverse md:flex-row items-center md:space-x-3">
             <button
               onClick={() => setIsAddMemberModalOpen(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 flex justify-center items-center"
             >
-              <BiPlus className="inline mr-1" /> Add Member
+              <BiPlus fontSize={25} className="inline mr-1 " />
+              <span className="hidden md:block">Add Member</span>
             </button>
             <button
               onClick={() => setIsSettleUpModalOpen(true)}
-              className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 mr-2 md:mr-0 flex justify-center items-center"
             >
-              <FaHandshakeSimple fontSize={20} className="inline mr-1" /> Settle
-              Up
+              <FaHandshakeSimple fontSize={25} className="inline mr-1" />
+              <span className="hidden md:block">Settle Up</span>
             </button>
           </div>
         </div>
@@ -229,8 +230,8 @@ const Group = () => {
           </ul>
         </div>
       </div>
-      <div className="mt-8">
-        <h1 className="text-lg font-semibold mb-2">Expenses In This Group</h1>
+      <div className="mt-8 mx-2">
+        <h1 className="text-lg font-semibold mb-2">Expenses of This Group</h1>
         <GroupExpensesTable thisGroupExpenses={thisGroupExpenses} />
       </div>
       <AddMemberModal

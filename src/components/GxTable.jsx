@@ -112,8 +112,12 @@ const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
           isOpen={!!selectedExpense}
           onClose={() => setSelectedExpense(null)}
           expense={selectedExpense}
-          onEdit={() => setEditingExpense(selectedExpense)}
+          onEdit={() => {
+            setSelectedExpense(null);
+            setEditingExpense(selectedExpense);
+          }}
           onDelete={() => {
+          
             deleteGroupExpense(selectedExpense.id);
             setSelectedExpense(null);
           }}

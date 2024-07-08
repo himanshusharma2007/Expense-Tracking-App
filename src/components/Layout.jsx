@@ -137,7 +137,7 @@ const Layout = ({ children, title }) => {
     return (
       <div
         ref={userModalRef}
-        className="absolute w-64 bg-white top-16 right-0 rounded-lg shadow-lg z-50"
+        className="absolute w-64 bg-white top-12 md:top-14 right-0 rounded-lg shadow-lg z-50"
       >
         <div className="p-4 border-b">
           <h3 className="text-lg font-semibold text-gray-800">{username}</h3>
@@ -280,8 +280,9 @@ const Layout = ({ children, title }) => {
                     anchor="left"
                     open={drawerOpen}
                     onClose={toggleDrawer(false)}
+           
                   >
-                    <div className="w-64 h-full bg-gray-800 text-white">
+                    <div className="w-full sm:w-64 h-full bg-gray-800 text-white">
                       <SidebarContent />
                     </div>
                   </Drawer>

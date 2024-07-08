@@ -266,8 +266,15 @@ const Dashboard = () => {
                   Total Personal Expense
                 </p>
                 <p
-                  className="text-xl md:text-2xl font-bold text-green-600 cursor-pointer"
-                  onClick={() => navigate("/personal-expenses")}
+                  className={`text-xl md:text-2xl font-bold text-green-600 ${
+                    dashboardData.totalPersonalExpense > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed opacity-50"
+                  }`}
+                  onClick={() =>
+                    dashboardData.totalPersonalExpense > 0 &&
+                    navigate("/personal-expenses")
+                  }
                 >
                   ₹{dashboardData.totalPersonalExpense}
                 </p>
@@ -278,8 +285,15 @@ const Dashboard = () => {
                   Money You Borrowed
                 </p>
                 <p
-                  className="text-xl md:text-2xl font-bold text-red-600 cursor-pointer"
-                  onClick={() => openModal({ type: "moneyBorrowed" })}
+                  className={`text-xl md:text-2xl font-bold text-red-600 ${
+                    dashboardData.moneyBorrowed > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed opacity-50"
+                  }`}
+                  onClick={() =>
+                    dashboardData.moneyBorrowed > 0 &&
+                    openModal({ type: "moneyBorrowed" })
+                  }
                 >
                   ₹{dashboardData.moneyBorrowed}
                 </p>
@@ -290,8 +304,15 @@ const Dashboard = () => {
                   Highest Expense This Month
                 </p>
                 <p
-                  className="text-xl md:text-2xl font-bold text-yellow-600 cursor-pointer"
-                  onClick={() => openModal({ type: "highestExpense" })}
+                  className={`text-xl md:text-2xl font-bold text-yellow-600 ${
+                    dashboardData.highestExpenseThisMonth > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed opacity-50"
+                  }`}
+                  onClick={() =>
+                    dashboardData.highestExpenseThisMonth > 0 &&
+                    openModal({ type: "highestExpense" })
+                  }
                 >
                   ₹{dashboardData.highestExpenseThisMonth.toFixed(2)}
                 </p>
@@ -309,19 +330,33 @@ const Dashboard = () => {
                   Total Group Expense
                 </p>
                 <p
-                  className="text-xl md:text-2xl font-bold text-blue-600 cursor-pointer"
-                  onClick={() => navigate("/group-expenses")}
+                  className={`text-xl md:text-2xl font-bold text-blue-600 ${
+                    dashboardData.totalGroupExpense > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed opacity-50"
+                  }`}
+                  onClick={() =>
+                    dashboardData.totalGroupExpense > 0 &&
+                    navigate("/group-expenses")
+                  }
                 >
                   ₹{dashboardData.totalGroupExpense}
                 </p>
               </div>
               <div>
-                  <p className="text-xs md:text-sm text-gray-600">
-                 You Owe to People 
+                <p className="text-xs md:text-sm text-gray-600">
+                  You Owe to People
                 </p>
                 <p
-                  className="text-xl md:text-2xl font-bold text-orange-600 cursor-pointer"
-                  onClick={() => openModal({ type: "youOwe" })}
+                  className={`text-xl md:text-2xl font-bold text-orange-600 ${
+                    dashboardData.youOweFromPeople > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed opacity-50"
+                  }`}
+                  onClick={() =>
+                    dashboardData.youOweFromPeople > 0 &&
+                    openModal({ type: "youOwe" })
+                  }
                 >
                   ₹
                   {typeof dashboardData.youOweFromPeople === "number"
@@ -334,8 +369,15 @@ const Dashboard = () => {
                   People Owe You
                 </p>
                 <p
-                  className="text-xl md:text-2xl font-bold text-purple-600 cursor-pointer"
-                  onClick={() => openModal({ type: "peopleOweYou" })}
+                  className={`text-xl md:text-2xl font-bold text-purple-600 ${
+                    dashboardData.peopleOweYou > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed opacity-50"
+                  }`}
+                  onClick={() =>
+                    dashboardData.peopleOweYou > 0 &&
+                    openModal({ type: "peopleOweYou" })
+                  }
                 >
                   ₹{dashboardData.peopleOweYou.toFixed(2)}
                 </p>
