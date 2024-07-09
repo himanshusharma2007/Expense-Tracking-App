@@ -11,7 +11,7 @@ const LandingPage = () => {
       if (userId) {
         const userData = await getUserData(userId);
         if (userData) {
-          // navigate("/dashboard");
+          navigate("/dashboard");
         }
       }
     };

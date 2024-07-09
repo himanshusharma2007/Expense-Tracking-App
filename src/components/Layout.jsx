@@ -319,7 +319,7 @@ const Layout = ({ children, title }) => {
               className="absolute top-14 right-4 md:right-0
                 bg-zinc-600 hover:bg-zinc-800 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 w-auto"
             >
-              {isMobile ? <FaPlus fontSize={16} /> : "Add New Expense"}
+              Add New Expense
             </button>
             <div className="user flex flex-row-reverse  items-center justify-center relative  ">
               <button onClick={() => setUserModal(!userModal)}>
