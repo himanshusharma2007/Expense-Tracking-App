@@ -1,5 +1,5 @@
 
-# TrackEx - Personal and Group Expense Tracke
+# TrackEx - Your Personal and Group Expense Tracker
 TrackEx is a comprehensive expense tracking application that allows users to manage both personal and group expenses effortlessly. With an intuitive interface and powerful features, TrackEx helps you stay on top of your finances and easily split costs with friends, roommates, or travel buddies.
  
 Check Out : https://trackex-sigma.vercel.app/
