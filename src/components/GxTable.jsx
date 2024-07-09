@@ -6,51 +6,20 @@ import { FaTrashCan } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import formatTimestamp from "../utils/dateFormatters";
 
-
-
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("Error in GroupExpensesTable:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong with the expense table.</h1>;
-    }
-
-    return this.props.children;
-  }
-}
-
 const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
   const { groupExpenses, deleteGroupExpense } = useExpenses();
   const [editingExpense, setEditingExpense] = useState(null);
   const [selectedExpense, setSelectedExpense] = useState(null);
+  const expenses = thisGroupExpenses ? thisGroupExpenses : groupExpenses;
+  const sortGroupExpenses = [
+    ...expenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)),
+  ];
 
-  let expenses = [];
-  let sortGroupExpenses = [];
-
-  try {
-    expenses = thisGroupExpenses || groupExpenses || [];
-    sortGroupExpenses = [...expenses].sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
-  } catch (error) {
-    console.error("Error processing expenses:", error);
-  }
-
-  if (!Array.isArray(sortGroupExpenses) || sortGroupExpenses.length === 0) {
+  if (expenses.length === 0) {
     return (
-      <p className="text-center text-gray-500">No group expenses available.</p>
+      <p className="text-center text-gray-500">
+        You haven't added any group expenses yet.
+      </p>
     );
   }
 
@@ -68,82 +37,66 @@ const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
             <th className="py-2 px-4 border-b">Title</th>
             <th className="py-2 px-4 border-b">Amount</th>
             <th className="py-2 px-4 border-b">Group</th>
-            <th className="py-2 px-4 border-b">Split Method</th>
+            <th className="py-2 px-4 border-b">Spilit Method</th>
             <th className="py-2 px-4 border-b">Actions</th>
             <th className="py-2 px-4 border-b"></th>
           </tr>
         </thead>
         <tbody>
-          {sortGroupExpenses.map(
-            (expense) =>
-              expense && (
-                <tr key={expense.id || Math.random()} className="text-center">
-                  <td className="py-2 px-4 border-b">
-                    {expense.timestamp
-                      ? formatTimestamp(expense.timestamp, true)
-                      : "N/A"}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {expense.title || "N/A"}
-                  </td>
-                  <td className="py-2 px-4 border-b">₹{expense.value || 0}</td>
-                  <td className="py-2 px-4 border-b">
-                    {expense.group || "N/A"}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {expense.splitMethod || "N/A"}
-                  </td>
-                  <td className="py-2 px-4 mt-2 flex items-center justify-center space-x-3">
-                    <button onClick={() => setEditingExpense(expense)}>
-                      <FaEdit fontSize="25px" />
-                    </button>
-                    <button onClick={() => deleteGroupExpense(expense.id)}>
-                      <FaTrashCan className="text-red-500" fontSize="25px" />
-                    </button>
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    <button
-                      onClick={() => setSelectedExpense(expense)}
-                      className="text-md text-nowrap text-blue-500"
-                    >
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              )
-          )}
+          {sortGroupExpenses.map((expense) => (
+            <tr key={expense.id} className="text-center ">
+              <td className="py-2 px-4 border-b">
+                {formatTimestamp(expense.timestamp, true)}
+              </td>
+              <td className="py-2 px-4 border-b">{expense.title}</td>
+              <td className="py-2 px-4 border-b">₹{expense.value}</td>
+              <td className="py-2 px-4 border-b">{expense.group}</td>
+              <td className="py-2 px-4 border-b">{expense.splitMethod}</td>
+
+              <td className="py-2 px-4 mt-2 flex items-center justify-center space-x-3">
+                <button onClick={() => setEditingExpense(expense)}>
+                  <FaEdit fontSize="25px" />
+                </button>
+                <button onClick={() => deleteGroupExpense(expense.id)}>
+                  <FaTrashCan className="text-red-500" fontSize="25px" />
+                </button>
+              </td>
+              <td
+                className="py-2 px-4 border-b
+              "
+              >
+                <button
+                  onClick={() => setSelectedExpense(expense)}
+                  className="text-md text-nowrap text-blue-500 "
+                >
+                  View Details
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
       {/* Small screen layout */}
       <div className="md:hidden mx-2 md:mx-4">
-        {sortGroupExpenses.map(
-          (expense) =>
-            expense && (
-              <div
-                key={expense.id || Math.random()}
-                className="bg-white border border-gray-200 rounded-lg mb-2 p-3"
-                onClick={() => setSelectedExpense(expense)}
-              >
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-500">
-                    {expense.timestamp
-                      ? formatTimestamp(expense.timestamp, true)
-                      : "N/A"}
-                  </div>
-                  <div className="font-semibold">₹{expense.value || 0}</div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="mt-1 font-medium">
-                    {expense.title || "N/A"}
-                  </div>
-                  <div className="mt-1 text-sm text-gray-600">
-                    {expense.group || "N/A"}
-                  </div>
-                </div>
+        {sortGroupExpenses.map((expense) => (
+          <div
+            key={expense.id}
+            className="bg-white border border-gray-200 rounded-lg mb-2 p-3"
+            onClick={() => setSelectedExpense(expense)}
+          >
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                {formatTimestamp(expense.timestamp, true)}
               </div>
-            )
-        )}
+              <div className="font-semibold">₹{expense.value}</div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="mt-1 font-medium">{expense.title}</div>
+              <div className="mt-1 text-sm text-gray-600">{expense.group}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {editingExpense && (
@@ -164,6 +117,7 @@ const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
             setEditingExpense(selectedExpense);
           }}
           onDelete={() => {
+          
             deleteGroupExpense(selectedExpense.id);
             setSelectedExpense(null);
           }}
@@ -174,10 +128,4 @@ const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
   );
 };
 
-const SafeGroupExpensesTable = (props) => (
-  <ErrorBoundary>
-    <GroupExpensesTable {...props} />
-  </ErrorBoundary>
-);
-
-export default SafeGroupExpensesTable;
+export default GroupExpensesTable;
