@@ -4,7 +4,7 @@ TrackEx is a comprehensive expense tracking application that allows users to man
  
 Check Out : https://trackex-sigma.vercel.app/
 
-![TrackEx Screenshot](../trackex/src/assets/images/4c048ab2-aa15-44b6-8f0b-4157812ff37c.png)
+![TrackEx Screenshot](./4c048ab2-aa15-44b6-8f0b-4157812ff37c.png)
 
 ## Features
 

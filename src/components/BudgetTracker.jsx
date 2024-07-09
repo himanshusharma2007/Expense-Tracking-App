@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useExpenses } from "../components/ExpenseContext";
+import React, { useState} from "react";
+import { useExpenses } from "./ExpenseContext";
 import { FaWallet, FaMoneyBillWave, FaReceipt } from "react-icons/fa";
 import { format } from "date-fns";
 
