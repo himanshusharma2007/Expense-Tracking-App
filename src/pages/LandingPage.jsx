@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { getUserData } from "../utils/firebaseUtils";
-import {gsap} from 'gsap'
+import { gsap } from "gsap";
 const LandingPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -20,16 +20,16 @@ const LandingPage = () => {
   }, [navigate]);
   const features = [
     {
-      title: "Effortless Expense Splitting",
+      title: "Personal & Group Expense Tracking",
       description:
-        "Divide costs among friends, roommates, or travel buddies with just a few taps. TrackEx automatically calculates who owes what, ensuring fairness and transparency.",
-      color: "bg-gradient-to-br from-purple-600 to-indigo-600",
+        "Easily log and manage both individual and shared expenses in one place. TrackEx seamlessly organizes your financial activities, whether personal or with groups.",
+      color: "bg-gradient-to-br from-green-500 to-teal-500",
     },
     {
-      title: "Real-time Sync & Notifications",
+      title: "Smart Expense Splitting & Settlement",
       description:
-        "Stay updated with instant syncing across devices and smart notifications. Never miss a payment or update, keeping everyone in the loop effortlessly.",
-      color: "bg-gradient-to-br from-green-500 to-teal-500",
+        "Easily divide costs within groups and settle debts effortlessly. TrackEx calculates shared expenses, showing who owes what, and streamlines group repayments.",
+      color: "bg-gradient-to-br from-purple-600 to-indigo-600",
     },
     {
       title: "Intuitive Budgeting Tools",
@@ -77,13 +77,13 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-[550px]  overflow-y-auto  md:mb-0 h-screen pattern flex flex-col  md:px-4">
-      <div className="h-[12vh] px-4 flex items-end mb-10 mt-3 md:mb-0 ">
+      <div className="h-[12vh] px-4 flex items-end mb-10 mt-5 md:mt-3 md:mb-0 ">
         <h1 className="text-5xl font-bold ">TrackEx</h1>
       </div>
       <div className="flex flex-col md:flex-row   w-full rounded-lg px-6 ">
-        <div className="left h-auto min-h-[88vh]  w-full md:w-[60%]  lg:w-[50] flex flex-col justify-center md:justify-end md:pb-4 ">
-          <div className="wraper lg:w-[80%]   space-y-10 md:space-y-3">
-            <h2 className="text-xl text-center md:text-left md:text-3xl font-serif font-bold text-[#34495E] leading-relaxed md:mb-10 ">
+        <div className="left h-auto min-h-[88vh]  w-full md:w-[60%]  lg:w-[50] flex flex-col  justify-center md:justify-end pb-10 md:pb-4 ">
+          <div className="wraper lg:w-[80%]   space-y-5 md:space-y-3">
+            <h2 className="text-2xl text-center md:text-left md:text-3xl font-serif font-bold text-[#34495E] leading-relaxed md:mb-10 ">
               Simplify your shared expenses. Stay balanced and in control.
             </h2>
             <p className="text-lg text-center md:text-left text-[#34495E] mx-auto lg:leading-8">
@@ -106,7 +106,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="right w-full md:w-[40%] lg:w-[50%]  flex items-center justify-center md:justify-end md:items-end pb-4 ">
-          <div className="iphone-mockup  relative w-[300px] h-[500px] md:h-[530px]  bg-zinc-800 flex justify-center py-3 px-3 rounded-[3rem] shadow-2xl md:mr-8">
+          <div className="iphone-mockup  relative w-[320px] h-[500px] md:h-[530px]  bg-zinc-800 flex justify-center py-3 px-3 rounded-[3rem] shadow-2xl md:mr-8">
             <div className="relative w-full h-full bg-white flex justify-center rounded-[2.5rem] overflow-hidden">
               <div className="absolute top-2 bg-zinc-800 w-[34%] h-[26px] rounded-full z-10"></div>
               <div className="absolute inset-0 flex items-center justify-center">

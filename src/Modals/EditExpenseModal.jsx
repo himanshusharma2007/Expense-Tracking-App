@@ -12,7 +12,6 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
   const [expenseValue, setExpenseValue] = useState("");
 const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
 
   const { updatePersonalExpense, updateGroupExpense ,groups} = useExpenses();

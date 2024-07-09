@@ -60,7 +60,7 @@ const UserInfoPage = () => {
         </div>
 
         <p className="text-[#3498DB] text-sm italic mb-6">
-           Your TrackEx account will be specific to your Browser.
+          Your TrackEx account will be specific to your Browser and Device.
         </p>
         <button
           className="w-full bg-[#27AE60] hover:bg-[#2ECC71] text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105"

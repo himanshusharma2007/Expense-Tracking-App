@@ -167,7 +167,7 @@ const Layout = ({ children, title }) => {
         </div>
         <ul className="py-2">
           <li className="px-4 py-2 text-sm text-gray-700">
-            Your TrackEx account will be specific to your Browser.
+            Your TrackEx account will be specific to your Browser and Device.
           </li>
           <li className="px-4 py-2">
             <button
@@ -310,7 +310,7 @@ const Layout = ({ children, title }) => {
                   </Drawer>
                 </>
               )}
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-1 md:mb-4 sm:mb-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 md:mb-4 sm:mb-0">
                 {title}
               </h1>
             </div>

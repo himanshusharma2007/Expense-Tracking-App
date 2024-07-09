@@ -39,12 +39,12 @@ const AddExpenseModal = ({
     }
   }, [expenseType, selectedGroup, groups]);
 
-const handleSplitAmongChange = (member, isChecked) => {
+  const handleSplitAmongChange = (member, isChecked) => {
     if (isChecked) {
       setSplitAmong([...splitAmong, member]);
     } else {
       setSplitAmong(splitAmong.filter((m) => m !== member));
-      
+
       // Deduct the unchecked member's amount from the total
       const updatedCustomSplits = { ...customSplits };
       delete updatedCustomSplits[member];
@@ -85,7 +85,7 @@ const handleSplitAmongChange = (member, isChecked) => {
             (sum, value) => sum + (parseFloat(value) || 0),
             0
           );
-
+console.log('expenseCategory :>> ', expenseCategory);
     const newExpense = {
       id: uuidv4(),
       title,
@@ -93,6 +93,7 @@ const handleSplitAmongChange = (member, isChecked) => {
       value: totalAmount,
       date,
       type: expenseType,
+      expenseCategory: expenseType == "personal" ? expenseCategory : null,
       group: expenseType === "group" ? selectedGroup : null,
       payer:
         splitMethod === "equal"
@@ -132,7 +133,7 @@ const handleSplitAmongChange = (member, isChecked) => {
                 Title
               </label>
               <input
-                type="text" 
+                type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full p-2 border rounded"
