@@ -42,7 +42,7 @@ const ExpenseTable = ({ title, expense, group }) => {
               <td className="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-500">
                 {expense.type === "personal"
                   ? expense.expenseCategory
-                  : expense.group}
+                  : expense.group.name}
               </td>
             </tr>
           </tbody>
@@ -75,7 +75,7 @@ const ExpenseTable = ({ title, expense, group }) => {
             <span className="text-sm text-gray-900">
               {expense.type === "personal"
                 ? expense.expenseCategory
-                : expense.group}
+                : expense.group.name}
             </span>
           </div>
         </div>
