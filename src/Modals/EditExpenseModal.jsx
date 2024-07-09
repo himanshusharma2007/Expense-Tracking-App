@@ -7,7 +7,7 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
   const [description, setDescription] = useState("");
   const [expenseValue, setExpenseValue] = useState("");
 
-  const { updatePersonalExpense, updateGroupExpense } = useExpenses();
+  const { updatePersonalExpense, updateGroupExpense, groups } = useExpenses();
   //   const existingGroups = ["Family", "Friends", "Work"];
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
       setTitle(expense.title);
       setDescription(expense.desc);
       setExpenseValue(expense.value.toString());
-      // console.log('expense.type :>> ', expense.type);
+      console.log("expense.type :>> ", expense.type);
     }
   }, [expense]);
 
@@ -30,8 +30,7 @@ const EditExpenseModal = ({ isOpen, onClose, expense }) => {
       ...expense,
       title: title,
       desc: description,
-      value:
-        expense.type === "personal" ? parseFloat(expenseValue) : expense.value,
+      value: parseFloat(expenseValue),
     };
 
     if (expense.type === "personal") {

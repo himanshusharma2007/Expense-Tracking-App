@@ -1,5 +1,5 @@
 const formatTimestamp = (timestamp, isday) => {
-  if (!timestamp) return "N/A";
+  // if (!timestamp) return "N/A";
   const date = new Date(timestamp);
   const now = new Date();
   const diffTime = Math.abs(now - date);

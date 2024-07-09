@@ -50,7 +50,7 @@ const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
               </td>
               <td className="py-2 px-4 border-b">{expense.title}</td>
               <td className="py-2 px-4 border-b">₹{expense.value}</td>
-              <td className="py-2 px-4 border-b">{expense.group}</td>
+              <td className="py-2 px-4 border-b">{expense.group.name}</td>
               <td className="py-2 px-4 border-b">{expense.splitMethod}</td>
 
               <td className="py-2 px-4 mt-2 flex items-center justify-center space-x-3">
@@ -93,7 +93,7 @@ const GroupExpensesTable = ({ gheading, thisGroupExpenses }) => {
             </div>
             <div className="flex justify-between items-center">
               <div className="mt-1 font-medium">{expense.title}</div>
-              <div className="mt-1 text-sm text-gray-600">{expense.group}</div>
+              <div className="mt-1 text-sm text-gray-600">{expense.group.name}</div>
             </div>
           </div>
         ))}
