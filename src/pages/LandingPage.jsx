@@ -80,33 +80,32 @@ const LandingPage = () => {
       <div className="h-[12vh] px-4 flex items-end mb-10 mt-3 md:mb-0 ">
         <h1 className="text-5xl font-bold ">TrackEx</h1>
       </div>
-      <div className="flex flex-col md:flex-row h-full md:h-[88vh] w-full rounded-lg px-6 ">
-        <div className="left w-full md:w-[60%]  lg:w-[50%]  flex flex-col justify-end  pb-4">
-          <div className="wraper lg:w-[80%] space-y-3">
-            <h2 className="text-xl md:text-3xl font-serif font-bold text-[#34495E] leading-relaxed md:mb-10 ">
+      <div className="flex flex-col md:flex-row   w-full rounded-lg px-6 ">
+        <div className="left h-auto min-h-[88vh]  w-full md:w-[60%]  lg:w-[50] flex flex-col justify-center md:justify-end md:pb-4 ">
+          <div className="wraper lg:w-[80%]   space-y-10 md:space-y-3">
+            <h2 className="text-xl text-center md:text-left md:text-3xl font-serif font-bold text-[#34495E] leading-relaxed md:mb-10 ">
               Simplify your shared expenses. Stay balanced and in control.
             </h2>
-            <p className="text-lg text-[#34495E] mx-auto lg:leading-8">
+            <p className="text-lg text-center md:text-left text-[#34495E] mx-auto lg:leading-8">
               With TrackEx, effortlessly manage shared expenses and balances
               with housemates, trips, groups, friends, and family. Track every
               expense, set budgets, and visualize your spending habits in one
               secure, intuitive platform.
             </p>
-            
-            <div className="wraper w-full  flex justify-center md:justify-start">
 
-            <Link to="/userinfo">
-              <button className="bg-[#27AE60] hover:bg-[#2ECC71] text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 ease-in-out transform hover:scale-105 my-3">
-                Get Started
-              </button>
-            </Link>
+            <div className="wraper w-full  flex justify-center md:justify-start">
+              <Link to="/userinfo">
+                <button className="bg-[#27AE60] hover:bg-[#2ECC71] text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 ease-in-out transform hover:scale-105 my-3">
+                  Get Started
+                </button>
+              </Link>
             </div>
-            <p className="text-[#3498DB] font-medium">
+            <p className="text-[#3498DB] font-medium text-center md:text-left">
               No credit card or login required to start!
             </p>
           </div>
         </div>
-        <div className="right w-full md:w-[40%] lg:w-[50%]  flex items-center md:justify-end md:items-end pb-4">
+        <div className="right w-full md:w-[40%] lg:w-[50%]  flex items-center justify-center md:justify-end md:items-end pb-4 ">
           <div className="iphone-mockup  relative w-[300px] h-[500px] md:h-[530px]  bg-zinc-800 flex justify-center py-3 px-3 rounded-[3rem] shadow-2xl md:mr-8">
             <div className="relative w-full h-full bg-white flex justify-center rounded-[2.5rem] overflow-hidden">
               <div className="absolute top-2 bg-zinc-800 w-[34%] h-[26px] rounded-full z-10"></div>

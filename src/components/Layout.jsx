@@ -17,6 +17,9 @@ import AddExpenseModal from "../Modals/AddExpenseModal";
 import NewGroupModal from "../Modals/GroupModal";
 import { useExpenses } from "./ExpenseContext";
 import { BsActivity } from "react-icons/bs";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import { HiMenuAlt2 } from "react-icons/hi";
 
 const sidebarItems = [
   { name: "Dashboard", path: "/dashboard", icon: <MdDashboard /> },
@@ -44,7 +47,27 @@ const Layout = ({ children, title }) => {
   let firstName = username[0];
   const userModalRef = useRef(null);
   const navigate = useNavigate();
-  const { groups, setGroups, setGroupExpenses, groupExpenses } = useExpenses();
+  const { groups, setGroups, setGroupExpenses, groupExpenses,setUserId,setUsername } = useExpenses();
+
+ useEffect(() => {
+   const fatchUserData = async () => {
+     const storedUserId = localStorage.getItem("trackexUserId");
+     if (storedUserId) {
+       console.log("id is get from the localStorage", storedUserId);
+       const userDocRef = doc(db, "users", storedUserId);
+       const userDoc = await getDoc(userDocRef);
+       if (userDoc.exists()) {
+         const userData = userDoc.data();
+
+         console.log("userData.firstName", userData.firstName);
+         setUsername([userData.firstName, userData.lastName || ""]);
+         setUserId(storedUserId);
+       }
+     }
+   };
+   fatchUserData();
+ }, []);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -140,7 +163,7 @@ const Layout = ({ children, title }) => {
         className="absolute w-64 bg-white top-12 md:top-14 right-0 rounded-lg shadow-lg z-50"
       >
         <div className="p-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-800">{username}</h3>
+          <h3 className="text-lg capitalize font-semibold text-gray-800">{username[0]} {username[1]} </h3>
         </div>
         <ul className="py-2">
           <li className="px-4 py-2 text-sm text-gray-700">
@@ -274,15 +297,14 @@ const Layout = ({ children, title }) => {
                     onClick={toggleDrawer(true)}
                     className="fixed   z-50"
                   >
-                    <MdMenu fontSize={30} />
+                    <HiMenuAlt2 fontSize={30} />
                   </IconButton>
                   <Drawer
                     anchor="left"
                     open={drawerOpen}
                     onClose={toggleDrawer(false)}
-           
                   >
-                    <div className="w-full sm:w-64 h-full bg-gray-800 text-white">
+                    <div className="w-64 h-full bg-gray-800 text-white">
                       <SidebarContent />
                     </div>
                   </Drawer>
