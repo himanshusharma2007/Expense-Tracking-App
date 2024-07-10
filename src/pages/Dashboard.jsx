@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../components/Layout";
 import { useExpenses } from "../components/ExpenseContext";
 import { format, isValid } from "date-fns";
@@ -8,11 +8,38 @@ import { FaHistory } from "react-icons/fa";
 import formatTimestamp from "../utils/dateFormatters";
 import ExpenseTable from "../components/ExpenseTable";
 import BudgetTracker from "../components/BudgetTracker";
-
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { username, personalExpenses, groupExpenses, groups } = useExpenses();
+  const {
+    username,
+    personalExpenses,
+    groupExpenses,
+    groups,
+    setUserId,
+    setUsername,
+  } = useExpenses();
   const [modalContent, setModalContent] = useState(null);
+ const storedUserId = localStorage.getItem("trackexUserId");
+
+   useEffect(() => {
+     const fatchUserData = async () => {
+       
+       if (storedUserId) {
+         console.log("id is get from the localStorage", storedUserId);
+         const userDocRef = doc(db, "users", storedUserId);
+         const userDoc = await getDoc(userDocRef);
+         if (userDoc.exists()) {
+           const userData = userDoc.data();
+
+           setUsername([userData.firstName, userData.lastName || ""]);
+           setUserId(storedUserId);
+         }
+       }
+     };
+     fatchUserData();
+   }, [storedUserId]);
 
   const Modal = ({ isOpen, onClose, title, children }) => {
     if (!isOpen) return null;

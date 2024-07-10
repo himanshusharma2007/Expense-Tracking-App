@@ -137,7 +137,7 @@ const SettleUpModal = ({ isOpen, onClose, groupName }) => {
             <h3 className="text-lg font-semibold mb-4">Select a settlement</h3>
             <ul className="mb-4 divide-y divide-gray-200">
               {settlements.length <= 0 && (
-                <li>everybody is settled in this group.</li>
+                <li>everyone is settled in this group.</li>
               )}
               {settlements.map((settlement, index) => (
                 <li

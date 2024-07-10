@@ -80,7 +80,9 @@ const ExpenseTypeModal = ({ onContinue, onClose }) => {
                 ))}
               </select>
               <button
-                onClick={() => setIsNewGroupModalOpen(true)}
+                onClick={() => {
+                  setIsNewGroupModalOpen(true);
+                }}
                 className="px-4 py-2 bg-green-500 text-white rounded flex justify-center items-center"
               >
                 <BiPlus fontSize="25px" />{" "}
